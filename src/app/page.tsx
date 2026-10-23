@@ -5,8 +5,11 @@ import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import StatsBar from '@/components/StatsBar';
 import FeaturedEvents from '@/components/FeaturedEvents';
-import AboutSection from '@/components/AboutSection';
+import UpcomingEventsGrid from '@/components/UpcomingEventsGrid';
 import InitiativesSection from '@/components/InitiativesSection';
+import AboutSection from '@/components/AboutSection';
+import TeamPreviewSection from '@/components/TeamPreviewSection';
+import AchievementsSection from '@/components/AchievementsSection';
 import JoinCtaSection from '@/components/JoinCtaSection';
 import Footer from '@/components/Footer';
 import EventModal from '@/components/EventModal';
@@ -27,41 +30,52 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-screen bg-cream-100 flex flex-col relative selection:bg-navy-850 selection:text-white">
-      {/* Top Navbar */}
+    <main className="min-h-screen bg-canvas flex flex-col relative selection:bg-primary selection:text-white">
+      {/* A. Header */}
       <Navbar
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenJoin={() => setIsJoinOpen(true)}
       />
 
-      {/* Hero Section matching Canva reference */}
+      {/* B. Hero Section */}
       <HeroSection
         onExploreEvents={() => scrollToSection('events')}
         onDiscoverECell={() => scrollToSection('about')}
       />
 
-      {/* Verified / Reference Stats Bar */}
+      {/* C. Impact Statistics (4 verified metrics) */}
       <StatsBar />
 
-      {/* Signature Featured Events */}
+      {/* D. Featured Events (Brand Battle, Workshop, Showcase) */}
       <FeaturedEvents
         onSelectEvent={(event) => setSelectedEvent(event)}
-        onViewAllEvents={() => scrollToSection('events')}
+        onViewAllEvents={() => scrollToSection('all-events')}
       />
 
-      {/* About & Mission Section */}
-      <AboutSection />
+      {/* E. Upcoming Events Grid with filters, search, and states */}
+      <div id="all-events">
+        <UpcomingEventsGrid />
+      </div>
 
-      {/* Initiatives & Programs */}
+      {/* F. Initiatives */}
       <InitiativesSection onOpenJoin={() => setIsJoinOpen(true)} />
 
-      {/* High-impact Join CTA */}
+      {/* G. About E-Cell */}
+      <AboutSection />
+
+      {/* H. Team Preview */}
+      <TeamPreviewSection />
+
+      {/* I. Achievements & Archive Preview */}
+      <AchievementsSection />
+
+      {/* J. Recruitment CTA */}
       <JoinCtaSection onOpenJoin={() => setIsJoinOpen(true)} />
 
-      {/* Comprehensive Footer */}
+      {/* K. Footer */}
       <Footer />
 
-      {/* Modals */}
+      {/* Interactive Modals */}
       <EventModal
         event={selectedEvent}
         onClose={() => setSelectedEvent(null)}

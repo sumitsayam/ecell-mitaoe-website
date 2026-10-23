@@ -2,11 +2,13 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, Calendar, MapPin } from 'lucide-react';
 import { signatureEvents, EventItem } from '@/data/events';
+import SectionHeader from '@/components/common/SectionHeader';
 
 interface FeaturedEventsProps {
-  onSelectEvent: (event: EventItem) => void;
+  onSelectEvent?: (event: EventItem) => void;
   onViewAllEvents?: () => void;
 }
 
@@ -16,72 +18,87 @@ export default function FeaturedEvents({
 }: FeaturedEventsProps) {
   return (
     <section id="events" className="py-10 md:py-16 scroll-mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-7 md:mb-9 gap-4">
-          <div>
-            {/* Overline with Horizontal Rule */}
-            <div className="flex items-center gap-3 mb-2.5">
-              <span className="text-[11px] font-bold tracking-[0.22em] text-navy-850/90 uppercase">
-                FEATURED EVENTS
-              </span>
-              <span className="w-16 sm:w-20 h-[2px] bg-navy-850" />
-            </div>
-
-            {/* Section Title: Our Signature Events */}
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-navy-950 font-display tracking-tight">
-              Our Signature{' '}
-              <span className="font-serif italic font-normal text-navy-850">
-                Events
-              </span>
-            </h2>
-          </div>
-
-          {/* View All Events Link */}
-          <button
-            onClick={onViewAllEvents}
-            type="button"
-            className="inline-flex items-center gap-2 text-sm font-bold text-navy-850 hover:text-navy-700 tracking-wide group self-start sm:self-auto py-1 border-b border-navy-850/30 hover:border-navy-850 transition-colors"
-          >
-            <span>View All Events</span>
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </button>
-        </div>
+        <SectionHeader
+          overline="FEATURED EVENTS"
+          title="Our Signature"
+          italicWord="Events"
+          description="High-impact competitions, masterclasses, and annual startup showcases organized by MITAOE E-Cell."
+          actionText="View All Events"
+          actionHref="/events"
+          onActionClick={onViewAllEvents}
+        />
 
         {/* 3 Signature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7">
           {signatureEvents.map((event) => (
             <div
               key={event.id}
-              role="button"
-              tabIndex={0}
-              aria-label={`${event.title}: ${event.description}`}
-              onClick={() => onSelectEvent(event)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectEvent(event);
-                }
-              }}
-              className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-soft-card hover:shadow-elevated transition-all duration-300 transform hover:-translate-y-1.5 bg-navy-950 focus:outline-none focus:ring-2 focus:ring-navy-850 focus:ring-offset-2"
+              className="group relative rounded-card overflow-hidden shadow-soft-card hover:shadow-elevated transition-all duration-300 transform hover:-translate-y-1.5 bg-primary-deep flex flex-col justify-between"
             >
-              {/* High-Resolution Canva Card Asset */}
-              <div className="relative w-full aspect-[470/155]">
+              {/* Event Image */}
+              <Link href={`/events/${event.slug}`} className="relative w-full aspect-[470/160] block overflow-hidden">
                 <Image
                   src={event.image}
                   alt={`${event.title} - ${event.description}`}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                  className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
                 />
-              </div>
+              </Link>
 
-              {/* Subtle Interactive Hover Glow & Border Accent */}
-              <div className="absolute inset-0 border-2 border-transparent group-hover:border-navy-850/30 rounded-2xl transition-colors pointer-events-none" />
+              {/* Card Bottom Meta & Actions */}
+              <div className="p-4 sm:p-5 bg-white border-t border-borderToken flex flex-col justify-between flex-1">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-surface-pale text-primary border border-borderToken">
+                      {event.category}
+                    </span>
+                    <span className="text-[11px] font-semibold text-muted flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5 text-primary" />
+                      {event.date}
+                    </span>
+                  </div>
 
-              {/* Interactive subtle click indicator on hover */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/90 text-navy-950 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
-                View Details
+                  <h3 className="text-lg font-bold text-primary-deep group-hover:text-primary transition-colors leading-snug">
+                    <Link href={`/events/${event.slug}`}>
+                      {event.title}
+                    </Link>
+                  </h3>
+                  <p className="text-xs text-body/80 mt-1.5 leading-relaxed line-clamp-2">
+                    {event.description}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-borderToken/60 flex items-center justify-between">
+                  {onSelectEvent ? (
+                    <button
+                      onClick={() => onSelectEvent(event)}
+                      type="button"
+                      className="text-xs font-bold text-primary hover:text-primary-deep flex items-center gap-1.5"
+                    >
+                      <span>Quick Preview</span>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                    </button>
+                  ) : (
+                    <Link
+                      href={`/events/${event.slug}`}
+                      className="text-xs font-bold text-primary hover:text-primary-deep flex items-center gap-1.5"
+                    >
+                      <span>Event Details</span>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  )}
+
+                  <Link
+                    href={`/events/${event.slug}`}
+                    className="w-8 h-8 rounded-full bg-surface-pale group-hover:bg-primary group-hover:text-white text-primary flex items-center justify-center transition-colors shadow-2xs"
+                    title={`View ${event.title}`}
+                  >
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
