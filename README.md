@@ -1,107 +1,207 @@
-# E-Cell MITAOE — Official Website & Management Platform
+# 🚀 E-Cell MITAOE — Ideas Into Impact
 
-A complete, production-ready web platform for **E-Cell MITAOE** (Entrepreneurship & Innovation Cell, MIT Academy of Engineering, Pune).
+<p align="center">
+  <strong>Entrepreneurship • Innovation • Collaboration</strong>
+</p>
 
-Designed strictly in adherence to the visual reference identity, preserving the editorial aesthetic, oversized **“IDEAS INTO IMPACT.”** typography, warm cream-white canvas (`#FAF8F2`), deep navy accents (`#092957` / `#061B36`), layered community photo collage, and clean multi-device navigation.
+<p align="center">
+  The official digital platform for the Entrepreneurship Cell of MIT Academy of Engineering, Pune.
+</p>
 
----
-
-## 🎨 1. Design System & Design Tokens
-
-| Token | Hex Value | Application |
-|---|---|---|
-| **Background** | `#FAF8F2` | Warm cream-white editorial canvas |
-| **Primary Navy** | `#092957` | Buttons, active navigation, key brand accents |
-| **Deep Navy** | `#061B36` | Headings, hero display text, footer backdrop |
-| **Secondary Blue** | `#244B7A` | Borders, subtle hover highlights, category tags |
-| **White** | `#FFFFFF` | Cards, modals, elevated surfaces |
-| **Body Text** | `#253247` | High-contrast readable typography |
-| **Muted Text** | `#687386` | Metadata, dates, secondary labels |
-| **Borders** | `#E2E5E9` | Restrained hairlines and table dividers |
-| **Pale Blue Surface** | `#EDF2F8` | Icon containers, subtle pill backgrounds |
-
-### Typography & Grid
-- **Display Typography:** `Space Grotesk` (headings, oversized hero typography)
-- **Body & Navigation:** `Inter` (readable UI, forms, tables)
-- **Serif Accent:** `Playfair Display` (italic emphasis in section titles)
-- **Desktop Grid:** 12-column responsive layout with max content width `1440px`
-- **Card Radii:** `16px` to `20px` with restrained shadows
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-In%20Development-0A2A5E?style=for-the-badge" alt="Project Status"/>
+  <img src="https://img.shields.io/badge/Theme-Navy%20%26%20Cream-244B7A?style=for-the-badge" alt="Design Theme"/>
+  <img src="https://img.shields.io/badge/Deployment-Vercel-black?style=for-the-badge&logo=vercel" alt="Deployment Platform"/>
+</p>
 
 ---
 
-## 🧭 2. Complete Route Map
+## 💡 About the Project
 
-### Public Website
-- **`/` — Homepage:**
-  - Sticky header with animated search and recruitment triggers
-  - Hero with architectural overline `MIT ACADEMY OF ENGINEERING · PUNE`, oversized `IDEAS INTO IMPACT.` (with stroked hollow `INTO`), community image collage, and rotated edge labels
-  - Verified Impact Statistics bar (Events, Participants, Student Members, Startups Showcased) with live toggle
-  - Featured Signature Events (Brand Battle, Entrepreneurship Workshop, Startup Showcase)
-  - Upcoming Events Directory with live search, category pills, and status filters
-  - Core Initiatives overview (Incubation Studio, E-Summit, Angel Network, Corporate Challenges)
-  - About E-Cell mission & student learning tracks
-  - Core Team & Faculty leadership preview
-  - Milestones timeline & downloadable audited reports preview
-  - Recruitment CTA banner with direct application trigger
-  - Comprehensive footer with verified MITAOE campus address and social channels
-- **`/about` — About E-Cell:** Institutional history, MAEER MITAOE background, CIIE incubation center relationship, 3,500 sq ft makerspace details, learning pathways.
-- **`/initiatives` — Programs & Pathways:** In-depth breakdowns of the Venture Incubation Studio, E-Summit, Angel Network, Corporate Innovation Challenges, and Founder Bootcamps.
-- **`/events` — Events Directory:** Searchable, category-filtered catalog with status tabs (Upcoming, Ongoing, Past) and empty states.
-- **`/events/[slug]` — Event Details:** Dynamic route with hero cover, time, venue, agenda schedule, speakers, real-time registration progress, and interactive registration modal.
-- **`/team` — Team Directory:** Department-filtered directory (Leadership, Technical, Corporate Relations, Design, Operations, Incubation, Faculty Advisory, Alumni Founders).
-- **`/achievements` — Milestones & Archives:** Year-based milestone timeline (2024–2027), startup success spotlights, and audited annual reports.
-- **`/resources` — Founder Knowledge Base:** Downloadable Student Founder Playbook, pitch deck templates, Startup India checklists, cap table models.
-- **`/join` — Cohort Recruitment:** Multi-track application form with instant validation, track details, FAQs, and confetti celebration.
+**E-Cell MITAOE** is a modern digital platform designed to showcase entrepreneurship, innovation, student initiatives, and the achievements of the Entrepreneurship Cell at MIT Academy of Engineering, Pune.
 
-### Internal Management Portal
-- **`/admin` — Executive Overview Dashboard:** 4 KPI cards, active events utilization charts, recruitment pipeline queue, recent audit logs.
-- **`/admin/login` — Portal Authentication:** Official sign-in with pre-filled demo account credentials and clear Demo Mode disclosure.
-- **`/admin/members` — Member Roster:** Searchable table, department filters, Add Member modal form, edit details, active status toggle, and delete confirmation dialog.
-- **`/admin/events` — Event CMS:** Create event modal, publish/draft toggle, capacity tracking, venue allocations, and event deletions.
-- **`/admin/participants` — Attendance & Check-In:** Attendee check-in status toggle (`Checked In` vs `Registered`), search by PRN or email, and **Export Attendee CSV** feature.
-- **`/admin/recruitment` — Applications Pipeline:** Candidate review modal with motivation statements, interview scoring (0–10), and decision buttons (Shortlist, Accept, Reject).
-- **`/admin/records` — Legal & Financial Archive:** Sponsorship agreements, audited budget summaries, institutional approvals, and upload modal.
-- **`/admin/analytics` — Data & Trends:** Branch participation distributions, category satisfaction ratings, and annual growth velocity.
-- **`/admin/settings` — Governance & Access:** Academic year controls, approval workflow toggles, role-based access specs, and security audit log.
+The platform aims to bring the E-Cell community together through an engaging public website and a centralized management system for organizing events, maintaining historical records, managing participants, and coordinating recruitment.
 
----
+Our vision is to create a digital space where ideas become opportunities and students turn innovation into impact.
 
-## ⚡ 3. Quick Start & Execution
+## ✨ Key Features
+
+### 🌐 Public Website
+- Modern, responsive homepage with an editorial design.
+- About E-Cell, mission, vision, and initiatives.
+- Upcoming events and searchable historical event archives.
+- Event details, galleries, highlights, and achievements.
+- Team profiles, leadership, and alumni showcases.
+- Recruitment announcements and opportunities.
+- Contact information and social media links.
+
+### 🗂️ Management Portal
+- Centralized member directory and team records.
+- Event creation, updates, and historical archives.
+- Participant registration and attendance tracking.
+- Recruitment application and selection management.
+- Document storage and annual reports.
+- Event participation statistics and management analytics.
+
+### 🎨 Design & Experience
+- Premium cream-white and deep navy-blue visual identity.
+- Bold typography and dynamic event photography.
+- Smooth scrolling and subtle entrance animations.
+- Interactive cards, transitions, and navigation.
+- Responsive layouts for desktop, tablet, and mobile.
+
+> **Note:** Features are planned or under development unless they have been implemented and tested in the current codebase.
+
+## 🛠️ Technology Stack
+
+The final stack depends on the current project configuration.
+
+| Technology | Purpose |
+|---|---|
+| React / Next.js | Frontend development |
+| TypeScript / JavaScript | Application logic |
+| Tailwind CSS / CSS | Styling and responsive layouts |
+| Framer Motion | Animations and transitions |
+| Lucide Icons | Interface icons |
+| Git & GitHub | Version control |
+| Vercel | Hosting and deployment |
+| Supabase, if configured | Authentication, database, and storage |
+
+## 🎨 Design System
+
+| Element | Color |
+|---|---|
+| Background | `#FAF8F2` |
+| Primary Navy | `#092957` |
+| Deep Navy | `#061B36` |
+| Secondary Blue | `#244B7A` |
+| White | `#FFFFFF` |
+| Body Text | `#253247` |
+
+The interface combines a clean institutional aesthetic with the creative energy of a student-led entrepreneurship community.
+
+## ⚙️ Getting Started
 
 ### Prerequisites
-- Node.js 18.x or 20.x
-- npm 9.x or 10.x
 
-### Install Dependencies
+- Node.js (a version compatible with the project's dependencies)
+- npm
+- Git
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/sumitsayam/ecell-mitaoe-website.git
+```
+
+### 2. Navigate to the Project
+
+```bash
+cd ecell-mitaoe-website
+```
+
+### 3. Install Dependencies
+
 ```bash
 npm install
 ```
 
-### Run Development Server
+### 4. Start the Development Server
+
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Production Build & Launch
+Open the local URL shown in your terminal, typically `http://localhost:3000` for Next.js or `http://localhost:5173` for Vite.
+
+### 5. Build for Production
+
 ```bash
 npm run build
-npm start
 ```
 
-### Run Automated QA Test Suite
-```bash
-npm test
+Use the scripts defined in `package.json` if your project uses a different development or build command.
+
+## 📁 Project Structure
+
+The exact structure depends on the framework and implementation.
+
+```text
+ecell-mitaoe-website/
+├── public/              # Static assets and images
+├── src/                 # Application source code (if used)
+│   ├── components/      # Reusable UI components
+│   ├── pages/            # Pages or routes (if used)
+│   ├── styles/           # Global and component styles
+│   └── assets/           # Project assets (if used)
+├── package.json
+├── package-lock.json
+├── .gitignore
+└── README.md
 ```
-Executes `scripts/test-server.js` and `scripts/test-assets.js` checking:
-1. HTTP `200 OK` on all 18 public and management portal routes.
-2. Content verification across all generated static pages.
-3. Verification of all high-resolution Canva collage and event card image assets.
+
+## 🚀 Deployment
+
+The website is intended to be deployed using [Vercel](https://vercel.com/).
+
+1. Import the GitHub repository into Vercel.
+2. Confirm the framework and build settings.
+3. Configure the required environment variables if backend services are used.
+4. Deploy the project.
+5. Verify the live website on desktop and mobile.
+
+Future commits pushed to the connected deployment branch can trigger automatic deployments.
+
+## 🔐 Security & Data Management
+
+The management portal is intended for authorized E-Cell members and administrators.
+
+- Restrict private records to authorized users.
+- Keep API keys and secrets out of source control.
+- Use backend-enforced access control for protected data.
+- Publish only approved event information and statistics.
+- Maintain historical records across academic years.
+
+## 🗺️ Roadmap
+
+- [x] Establish the project repository.
+- [x] Define the visual direction and brand colors.
+- [ ] Complete the responsive public homepage.
+- [ ] Build event pages and historical archives.
+- [ ] Add team and initiative pages.
+- [ ] Implement authentication and role-based permissions.
+- [ ] Develop member and participant management.
+- [ ] Add recruitment workflows and attendance tracking.
+- [ ] Integrate the production database.
+- [ ] Test and deploy the complete platform.
+
+## 🤝 Contributing
+
+Contributions from authorized E-Cell team members are welcome.
+
+1. Create a branch for your changes.
+2. Implement and test your updates.
+3. Commit your work with a descriptive message.
+4. Push your branch to GitHub.
+5. Open a pull request for review.
+
+Please coordinate with the project maintainers before making changes to shared components, production configuration, or database structures.
+
+## 🏛️ Organization
+
+**E-Cell MITAOE**  
+MIT Academy of Engineering, Pune, Maharashtra, India
+
+## 📜 License
+
+A license has not yet been specified. Add an appropriate license after confirming the project's ownership and permissions.
 
 ---
 
-## 🔒 4. Data Separation & Production Integration
+<p align="center">
+  <strong>💡 Think Bold. Build Smart. Create Impact.</strong>
+</p>
 
-- **Current State (Demo Mode):** Operates on typed, realistic in-memory demo datasets (`src/data/adminDemo.ts`, `src/data/events.ts`). A yellow banner alerts administrators that changes are demo-scoped.
-- **Supabase Integration Layer:** See `.env.example` for required environment variables (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`).
-- **Data Protection:** Private student records, PRNs, interview evaluation scores, and financial ledgers are restricted exclusively to `/admin` routes.
+<p align="center">
+  Built to empower the next generation of innovators and entrepreneurs. 🚀
+</p>
