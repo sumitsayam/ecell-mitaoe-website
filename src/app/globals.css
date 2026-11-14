@@ -15,6 +15,7 @@
   /* ── Core Editorial Design System Tokens ── */
   --color-background: var(--bg);
   --color-surface: #FFFFFF;
+  --color-surface-hover: #F0F4FE;
   --color-foreground: var(--ink);
   --color-body: #102A56;
   --color-primary: var(--accent);
@@ -48,6 +49,7 @@
 
   --color-background: var(--bg);
   --color-surface: #10141E;
+  --color-surface-hover: #161D2E;
   --color-foreground: var(--ink);
   --color-body: #C7D2E5;
   --color-primary: var(--accent);

@@ -3,8 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { insightsData } from '@/data/insights';
 import { ArrowLeft, Clock, Calendar, CheckCircle2, Share2, BookOpen } from 'lucide-react';
 
@@ -24,48 +22,46 @@ export default function InsightDetailPage({ params }: InsightDetailPageProps) {
   const related = insightsData.filter((item) => item.slug !== params.slug).slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-white text-[#102A56] flex flex-col selection:bg-[#155EEF] selection:text-white">
-      <Navbar />
-
-      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 w-full">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)] flex flex-col">
+      <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 w-full">
         {/* Back Link */}
         <Link
           href="/insights"
-          className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#64748B] hover:text-[#155EEF] transition-colors mb-8"
+          className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[var(--color-muted)] hover:text-[var(--accent)] transition-colors mb-8"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to all insights</span>
         </Link>
 
         {/* Article Header */}
-        <header className="mb-10 pb-8 border-b border-[#D9E5F5]">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F4F8FF] border border-[#D9E5F5] font-mono text-[11px] font-semibold text-[#155EEF] uppercase tracking-wider mb-4">
+        <header className="mb-10 pb-8 border-b border-[var(--color-border)]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] font-mono text-[11px] font-semibold text-[var(--accent)] uppercase tracking-wider mb-4">
             <span>{article.category}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-display tracking-tight text-[#102A56] leading-[1.1] mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-display tracking-tight text-[var(--ink)] leading-[1.1] mb-6">
             {article.title}
           </h1>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-[#64748B]">
+          <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-[var(--color-muted)]">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#155EEF] text-white flex items-center justify-center font-bold text-xs font-mono">
+              <div className="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center font-bold text-xs font-mono">
                 {article.author.name.charAt(0)}
               </div>
               <div>
-                <div className="font-semibold text-[#102A56]">{article.author.name}</div>
-                <div className="text-[10px] text-[#94A3B8]">{article.author.role}</div>
+                <div className="font-semibold text-[var(--ink)]">{article.author.name}</div>
+                <div className="text-[10px] text-[var(--color-muted)]">{article.author.role}</div>
               </div>
             </div>
 
             <div className="flex items-center gap-4 text-[11px]">
               <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-[#155EEF]" />
+                <Calendar className="w-3.5 h-3.5 text-[var(--accent)]" />
                 {article.publishedAt}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-[#155EEF]" />
+                <Clock className="w-3.5 h-3.5 text-[var(--accent)]" />
                 {article.readTime}
               </span>
             </div>
@@ -74,15 +70,15 @@ export default function InsightDetailPage({ params }: InsightDetailPageProps) {
 
         {/* Key Takeaways Callout */}
         {article.keyTakeaways && article.keyTakeaways.length > 0 && (
-          <div className="mb-10 p-6 sm:p-8 rounded-2xl bg-[#F4F8FF] border border-[#D9E5F5] shadow-xs">
-            <h3 className="font-mono text-xs uppercase tracking-widest text-[#155EEF] font-bold mb-4 flex items-center gap-2">
+          <div className="mb-10 p-6 sm:p-8 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-soft-card">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-[var(--accent)] font-bold mb-4 flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
               <span>Core Framework &amp; Takeaways</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {article.keyTakeaways.map((takeaway, idx) => (
-                <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#102A56]">
-                  <CheckCircle2 className="w-4 h-4 text-[#155EEF] shrink-0 mt-0.5" />
+                <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[var(--ink)] font-sans">
+                  <CheckCircle2 className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
                   <span>{takeaway}</span>
                 </div>
               ))}
@@ -91,17 +87,17 @@ export default function InsightDetailPage({ params }: InsightDetailPageProps) {
         )}
 
         {/* Article Prose */}
-        <article className="prose max-w-none text-[#102A56] font-sans leading-relaxed text-base sm:text-lg space-y-6">
+        <article className="max-w-none text-[var(--ink)] font-sans leading-relaxed text-base sm:text-lg space-y-6">
           {article.content.map((paragraph, index) => (
-            <p key={index} className="text-[#334155] leading-relaxed">
+            <p key={index} className="text-[var(--ink)]/80 leading-relaxed font-sans">
               {paragraph}
             </p>
           ))}
         </article>
 
         {/* Share & Signoff */}
-        <div className="mt-12 pt-8 border-t border-[#D9E5F5] flex items-center justify-between font-mono text-xs text-[#64748B]">
-          <span>E-CELL MITAOE // EDITORIAL DESK</span>
+        <div className="mt-12 pt-8 border-t border-[var(--color-border)] flex items-center justify-between font-mono text-xs text-[var(--color-muted)]">
+          <span>E-CELL MIT AOE // EDITORIAL DESK</span>
           <button
             onClick={() => {
               if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -110,7 +106,7 @@ export default function InsightDetailPage({ params }: InsightDetailPageProps) {
               }
             }}
             type="button"
-            className="flex items-center gap-1.5 text-[#155EEF] hover:underline cursor-pointer"
+            className="flex items-center gap-1.5 text-[var(--accent)] hover:underline cursor-pointer"
           >
             <Share2 className="w-3.5 h-3.5" />
             <span>Copy Link</span>
@@ -119,8 +115,8 @@ export default function InsightDetailPage({ params }: InsightDetailPageProps) {
 
         {/* Related Articles */}
         {related.length > 0 && (
-          <div className="mt-16 pt-10 border-t border-[#D9E5F5]">
-            <h3 className="text-xl font-bold font-display text-[#102A56] mb-6">
+          <div className="mt-16 pt-10 border-t border-[var(--color-border)]">
+            <h3 className="text-xl font-bold font-display text-[var(--ink)] mb-6">
               More from the Founder&apos;s Journal
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -128,15 +124,15 @@ export default function InsightDetailPage({ params }: InsightDetailPageProps) {
                 <Link
                   key={rel.id}
                   href={`/insights/${rel.slug}`}
-                  className="p-5 rounded-xl border border-[#D9E5F5] hover:border-[#155EEF] bg-[#F4F8FF] hover:bg-white transition-all group"
+                  className="p-5 rounded-2xl border border-[var(--color-border)] hover:border-[var(--accent)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] transition-all group shadow-soft-card"
                 >
-                  <div className="text-[10px] font-mono uppercase text-[#155EEF] font-semibold mb-2">
+                  <div className="text-[10px] font-mono uppercase text-[var(--accent)] font-semibold mb-2">
                     {rel.category}
                   </div>
-                  <h4 className="font-bold text-[#102A56] group-hover:text-[#155EEF] transition-colors text-sm sm:text-base leading-snug mb-2">
+                  <h4 className="font-bold text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors text-sm sm:text-base leading-snug mb-2 font-display">
                     {rel.title}
                   </h4>
-                  <div className="font-mono text-[11px] text-[#94A3B8]">
+                  <div className="font-mono text-[11px] text-[var(--color-muted)]">
                     {rel.readTime}
                   </div>
                 </Link>
@@ -144,10 +140,7 @@ export default function InsightDetailPage({ params }: InsightDetailPageProps) {
             </div>
           </div>
         )}
-      </main>
-
-      <Footer />
-    </div>
+      </div>
+    </main>
   );
 }
-

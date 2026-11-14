@@ -1,9 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Target, Compass, Lightbulb, Rocket, ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Target, Compass, ShieldCheck, ArrowRight } from 'lucide-react';
 import SectionHeader from '@/components/common/SectionHeader';
 
 export const metadata = {
@@ -32,23 +30,21 @@ export default function AboutPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-canvas flex flex-col">
-      <Navbar />
-
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)] flex flex-col">
       {/* Page Header */}
-      <section className="pt-10 pb-12 md:pt-14 md:pb-16 border-b border-borderToken bg-surface-pale/40">
+      <section className="pt-10 pb-12 md:pt-14 md:pb-16 border-b border-[var(--line)] bg-[var(--bg)]">
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-8 h-[2px] bg-primary" />
-              <span className="text-[11px] font-bold tracking-[0.24em] text-primary uppercase">
-                ABOUT E-CELL MITAOE
+              <span className="w-8 h-[2px] bg-[var(--accent)]" />
+              <span className="text-[11px] font-mono font-bold tracking-[0.24em] text-[var(--accent)] uppercase">
+                ABOUT E-CELL MIT AOE
               </span>
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-primary-deep font-display tracking-tight leading-tight mb-5">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[var(--ink)] font-display tracking-tight leading-tight mb-5">
               Catalyzing Student Ambition into Scalable Reality.
             </h1>
-            <p className="text-base sm:text-lg text-body leading-relaxed font-normal">
+            <p className="text-base sm:text-lg text-[var(--ink)]/80 leading-relaxed font-normal">
               Operating under the MITAOE Centre for Innovation, Incubation and Entrepreneurship (CIIE),
               we are a student-led organization dedicated to empowering engineers to think like founders.
             </p>
@@ -57,31 +53,31 @@ export default function AboutPage() {
       </section>
 
       {/* Mission & Vision Section */}
-      <section className="py-14 md:py-20 border-b border-borderToken bg-white">
+      <section className="py-14 md:py-20 border-b border-[var(--line)] bg-[var(--bg)]">
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
             {/* Mission */}
-            <div className="p-8 rounded-card border border-borderToken bg-canvas shadow-soft-card">
-              <div className="w-12 h-12 rounded-xl bg-surface-pale border border-borderToken flex items-center justify-center mb-5 text-primary">
+            <div className="p-8 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-soft-card">
+              <div className="w-12 h-12 rounded-xl bg-[var(--bg)] border border-[var(--color-border)] flex items-center justify-center mb-5 text-[var(--accent)]">
                 <Target className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-bold text-primary-deep font-display mb-3">
+              <h2 className="text-2xl font-bold text-[var(--ink)] font-display mb-3">
                 Our Mission
               </h2>
-              <p className="text-sm sm:text-base text-body leading-relaxed">
+              <p className="text-sm sm:text-base text-[var(--ink)]/80 leading-relaxed">
                 To build an enduring, accessible entrepreneurial ecosystem at MIT Academy of Engineering that equips every student with the technical confidence, commercial acumen, and institutional support required to build viable technology ventures.
               </p>
             </div>
 
             {/* Vision */}
-            <div className="p-8 rounded-card border border-borderToken bg-canvas shadow-soft-card">
-              <div className="w-12 h-12 rounded-xl bg-surface-pale border border-borderToken flex items-center justify-center mb-5 text-primary">
+            <div className="p-8 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-soft-card">
+              <div className="w-12 h-12 rounded-xl bg-[var(--bg)] border border-[var(--color-border)] flex items-center justify-center mb-5 text-[var(--accent)]">
                 <Compass className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-bold text-primary-deep font-display mb-3">
+              <h2 className="text-2xl font-bold text-[var(--ink)] font-display mb-3">
                 Our Vision
               </h2>
-              <p className="text-sm sm:text-base text-body leading-relaxed">
+              <p className="text-sm sm:text-base text-[var(--ink)]/80 leading-relaxed">
                 To position MITAOE among India’s premier collegiate breeding grounds for deep-tech, hardware, and digital innovators—fostering founders whose companies create employment, intellectual property, and real societal value.
               </p>
             </div>
@@ -90,38 +86,38 @@ export default function AboutPage() {
       </section>
 
       {/* Institutional Context & CIIE */}
-      <section className="py-14 md:py-20 border-b border-borderToken bg-canvas">
+      <section className="py-14 md:py-20 border-b border-[var(--line)] bg-[var(--bg)]">
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-pale text-primary text-xs font-bold uppercase tracking-wider mb-4 border border-borderToken">
-                <ShieldCheck className="w-4 h-4 text-primary" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-surface)] text-[var(--accent)] text-xs font-mono font-bold uppercase tracking-wider mb-4 border border-[var(--color-border)]">
+                <ShieldCheck className="w-4 h-4 text-[var(--accent)]" />
                 <span>INSTITUTIONAL FOUNDATION</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-primary-deep font-display tracking-tight leading-tight mb-5">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[var(--ink)] font-display tracking-tight leading-tight mb-5">
                 Rooted in Engineering Rigor at Alandi, Pune.
               </h2>
-              <p className="text-sm sm:text-base text-body leading-relaxed mb-4">
+              <p className="text-sm sm:text-base text-[var(--ink)]/80 leading-relaxed mb-4">
                 Established under the umbrella of the Maharashtra Academy of Engineering Education & Research (MAEER), MITAOE has long fostered technical ingenuity.
               </p>
-              <p className="text-sm sm:text-base text-body leading-relaxed mb-6">
+              <p className="text-sm sm:text-base text-[var(--ink)]/80 leading-relaxed mb-6">
                 E-Cell bridges academic research with entrepreneurial execution. Through collaboration with the MITAOE Centre for Innovation, Incubation and Entrepreneurship (CIIE), student ventures gain access to official pre-incubation grants, intellectual property counsel, and direct pathways to national incubators.
               </p>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-white border border-borderToken">
-                  <div className="text-2xl font-black text-primary font-display">3,500+</div>
-                  <div className="text-xs text-muted mt-1">Sq Ft Dedicated Prototyping Space</div>
+                <div className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]">
+                  <div className="text-2xl font-black text-[var(--accent)] font-display">3,500+</div>
+                  <div className="text-xs text-[var(--color-muted)] mt-1 font-mono">Sq Ft Dedicated Prototyping Space</div>
                 </div>
-                <div className="p-4 rounded-xl bg-white border border-borderToken">
-                  <div className="text-2xl font-black text-primary font-display">₹45L+</div>
-                  <div className="text-xs text-muted mt-1">Student Grants & Seed Support</div>
+                <div className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]">
+                  <div className="text-2xl font-black text-[var(--accent)] font-display">₹45L+</div>
+                  <div className="text-xs text-[var(--color-muted)] mt-1 font-mono">Student Grants & Seed Support</div>
                 </div>
               </div>
             </div>
 
             <div className="lg:col-span-6">
-              <div className="relative rounded-card-lg overflow-hidden border border-borderToken shadow-elevated">
+              <div className="relative rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-elevated">
                 <Image
                   src="/images/hero-collage-perfect.png"
                   alt="Students Collaborating in MITAOE Innovation Labs"
@@ -136,7 +132,7 @@ export default function AboutPage() {
       </section>
 
       {/* What Students Learn & Build */}
-      <section className="py-14 md:py-20 bg-white">
+      <section className="py-14 md:py-20 bg-[var(--bg)]">
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader
             overline="CURRICULUM & EXPERIENCES"
@@ -149,16 +145,16 @@ export default function AboutPage() {
             {learningTracks.map((track, i) => (
               <div
                 key={i}
-                className="p-6 rounded-card border border-borderToken bg-canvas flex flex-col justify-between hover:border-primary/50 transition-colors"
+                className="p-6 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] flex flex-col justify-between hover:border-[var(--accent)] transition-all shadow-soft-card"
               >
                 <div>
-                  <div className="w-10 h-10 rounded-xl bg-surface-pale border border-borderToken flex items-center justify-center font-bold text-primary font-mono mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--bg)] border border-[var(--color-border)] flex items-center justify-center font-bold text-[var(--accent)] font-mono mb-4">
                     0{i + 1}
                   </div>
-                  <h3 className="text-base font-bold text-primary-deep mb-2">
+                  <h3 className="text-base font-bold text-[var(--ink)] font-display mb-2">
                     {track.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-body/80 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[var(--ink)]/75 leading-relaxed">
                     {track.description}
                   </p>
                 </div>
@@ -167,18 +163,18 @@ export default function AboutPage() {
           </div>
 
           {/* CTA Box */}
-          <div className="mt-14 p-8 sm:p-10 rounded-card-lg bg-surface-pale border border-borderToken flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="mt-14 p-8 sm:p-10 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft-card">
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-primary-deep font-display mb-1">
+              <h3 className="text-xl sm:text-2xl font-bold text-[var(--ink)] font-display mb-1">
                 Want to be part of the next cohort?
               </h3>
-              <p className="text-xs sm:text-sm text-muted">
+              <p className="text-xs sm:text-sm text-[var(--color-muted)] font-sans">
                 Applications for student organizers and founder teams are currently open.
               </p>
             </div>
             <Link
               href="/join"
-              className="inline-flex items-center gap-2 bg-primary hover:bg-primary-deep text-white px-6 py-3.5 rounded-xl text-sm font-bold transition-all shadow-sm shrink-0"
+              className="inline-flex items-center gap-2 bg-[var(--accent)] hover:opacity-90 text-white px-6 py-3.5 rounded-full text-xs font-mono uppercase tracking-wider font-semibold transition-all shadow-sm shrink-0"
             >
               <span>Apply to Join E-Cell</span>
               <ArrowRight className="w-4 h-4" />
@@ -186,8 +182,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

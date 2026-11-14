@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Sparkles, Send, CheckCircle2, Rocket, ArrowRight, HelpCircle } from 'lucide-react';
+import { Sparkles, Send, Rocket, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import SectionHeader from '@/components/common/SectionHeader';
 
 export default function JoinPage() {
   const [fullName, setFullName] = useState('');
@@ -26,7 +23,7 @@ export default function JoinPage() {
         particleCount: 140,
         spread: 85,
         origin: { y: 0.55 },
-        colors: ['#092957', '#244B7A', '#10B981', '#F59E0B']
+        colors: ['#092957', '#155EEF', '#10B981', '#F59E0B']
       });
     } catch (err) {}
   };
@@ -60,23 +57,21 @@ export default function JoinPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-canvas flex flex-col">
-      <Navbar />
-
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)] flex flex-col">
       {/* Header */}
-      <section className="pt-10 pb-12 md:pt-14 md:pb-16 border-b border-borderToken bg-surface-pale/40">
+      <section className="pt-10 pb-12 md:pt-14 md:pb-16 border-b border-[var(--line)] bg-[var(--bg)]">
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-8 h-[2px] bg-primary" />
-              <span className="text-[11px] font-bold tracking-[0.24em] text-primary uppercase">
+              <span className="w-8 h-[2px] bg-[var(--accent)]" />
+              <span className="text-[11px] font-mono font-bold tracking-[0.24em] text-[var(--accent)] uppercase">
                 COHORT RECRUITMENT 2026–27
               </span>
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-primary-deep font-display tracking-tight leading-tight mb-5">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[var(--ink)] font-display tracking-tight leading-tight mb-5">
               Join the Team Building MITAOE’s Future.
             </h1>
-            <p className="text-base sm:text-lg text-body leading-relaxed">
+            <p className="text-base sm:text-lg text-[var(--ink)]/80 leading-relaxed font-normal">
               We look for curiosity, grit, and the ambition to execute. Open to students from First Year to Final Year across all branches.
             </p>
           </div>
@@ -84,24 +79,24 @@ export default function JoinPage() {
       </section>
 
       {/* Main Section: Application Form & Track Info */}
-      <section className="py-12 md:py-20 bg-canvas flex-1">
+      <section className="py-12 md:py-20 bg-[var(--bg)] flex-1">
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             {/* Left Column: Application Form */}
             <div className="lg:col-span-7">
-              <div className="bg-white p-6 sm:p-10 rounded-card-lg border border-borderToken shadow-soft-card">
+              <div className="bg-[var(--color-surface)] p-6 sm:p-10 rounded-2xl border border-[var(--color-border)] shadow-soft-card">
                 {submitted ? (
                   <div className="text-center py-12 space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto shadow-xs border border-emerald-500/20">
                       <Rocket className="w-8 h-8" />
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-primary-deep font-display">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[var(--ink)] font-display">
                       Application Submitted!
                     </h2>
-                    <p className="text-sm text-body leading-relaxed max-w-md mx-auto">
-                      Thank you, <span className="font-bold text-primary">{fullName}</span>. Your application for the <span className="font-bold">{departmentTrack}</span> department has been recorded under PRN <span className="font-mono">{prn}</span>.
+                    <p className="text-sm text-[var(--ink)]/80 leading-relaxed max-w-md mx-auto font-sans">
+                      Thank you, <span className="font-bold text-[var(--accent)]">{fullName}</span>. Your application for the <span className="font-bold text-[var(--ink)]">{departmentTrack}</span> department has been recorded under PRN <span className="font-mono text-[var(--accent)]">{prn}</span>.
                     </p>
-                    <p className="text-xs text-muted max-w-sm mx-auto">
+                    <p className="text-xs text-[var(--color-muted)] max-w-sm mx-auto font-sans">
                       Our department leads will review your portfolio and send Round 1 screening details to <span className="underline">{email}</span>.
                     </p>
                     <div className="pt-4">
@@ -114,7 +109,7 @@ export default function JoinPage() {
                           setStatement('');
                           setLinks('');
                         }}
-                        className="px-6 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-deep transition-colors"
+                        className="px-6 py-2.5 rounded-full bg-[var(--accent)] text-white text-xs font-mono uppercase font-bold hover:opacity-90 transition-all cursor-pointer"
                       >
                         Submit Another Application
                       </button>
@@ -123,16 +118,16 @@ export default function JoinPage() {
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5 text-xs sm:text-sm">
                     <div>
-                      <h2 className="text-2xl font-bold text-primary-deep font-display">
+                      <h2 className="text-2xl font-bold text-[var(--ink)] font-display">
                         Core Team Application Form
                       </h2>
-                      <p className="text-xs text-muted mt-1">
+                      <p className="text-xs text-[var(--color-muted)] mt-1 font-sans">
                         Please provide accurate college credentials. Applications close once department quotas are met.
                       </p>
                     </div>
 
                     <div>
-                      <label className="block font-bold text-primary-deep mb-1">
+                      <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                         Full Name *
                       </label>
                       <input
@@ -141,13 +136,13 @@ export default function JoinPage() {
                         placeholder="e.g. Sumit Sayam"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-borderToken bg-canvas focus:outline-none focus:ring-1 focus:ring-primary text-body"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] placeholder:text-[var(--color-muted)] font-sans"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block font-bold text-primary-deep mb-1">
+                        <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                           MITAOE PRN / Roll No *
                         </label>
                         <input
@@ -156,12 +151,12 @@ export default function JoinPage() {
                           placeholder="e.g. MIT2025CS042"
                           value={prn}
                           onChange={(e) => setPrn(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl border border-borderToken bg-canvas focus:outline-none focus:ring-1 focus:ring-primary text-body uppercase font-mono"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] uppercase font-mono placeholder:text-[var(--color-muted)]"
                         />
                       </div>
 
                       <div>
-                        <label className="block font-bold text-primary-deep mb-1">
+                        <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                           College Email *
                         </label>
                         <input
@@ -170,20 +165,20 @@ export default function JoinPage() {
                           placeholder="student@mitaoe.ac.in"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl border border-borderToken bg-canvas focus:outline-none focus:ring-1 focus:ring-primary text-body"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] font-mono placeholder:text-[var(--color-muted)]"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block font-bold text-primary-deep mb-1">
+                        <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                           Year of Study
                         </label>
                         <select
                           value={year}
                           onChange={(e) => setYear(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl border border-borderToken bg-canvas focus:outline-none focus:ring-1 focus:ring-primary text-body"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] font-sans"
                         >
                           <option>First Year (FE)</option>
                           <option>Second Year (SE)</option>
@@ -193,18 +188,18 @@ export default function JoinPage() {
                       </div>
 
                       <div>
-                        <label className="block font-bold text-primary-deep mb-1">
+                        <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                           Engineering Branch
                         </label>
                         <select
                           value={branch}
                           onChange={(e) => setBranch(e.target.value)}
-                          className="w-full px-4 py-2.5 rounded-xl border border-borderToken bg-canvas focus:outline-none focus:ring-1 focus:ring-primary text-body"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] font-sans"
                         >
                           <option>Computer Engineering</option>
-                          <option>IT & Software</option>
-                          <option>AI & Data Science</option>
-                          <option>Electronics & Telecommunication</option>
+                          <option>IT &amp; Software</option>
+                          <option>AI &amp; Data Science</option>
+                          <option>Electronics &amp; Telecommunication</option>
                           <option>Mechanical Engineering</option>
                           <option>Civil Engineering</option>
                           <option>Chemical Engineering</option>
@@ -214,24 +209,24 @@ export default function JoinPage() {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-primary-deep mb-1">
+                      <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                         Preferred Department Track *
                       </label>
                       <select
                         value={departmentTrack}
                         onChange={(e) => setDepartmentTrack(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-borderToken bg-canvas focus:outline-none focus:ring-1 focus:ring-primary text-body font-semibold"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] font-sans font-semibold"
                       >
-                        <option>Technical & Platform Development</option>
-                        <option>Corporate Relations & Sponsorship</option>
-                        <option>Design & Visual Branding</option>
-                        <option>Events & Operations Management</option>
-                        <option>Startup Incubation & Research</option>
+                        <option>Technical &amp; Platform Development</option>
+                        <option>Corporate Relations &amp; Sponsorship</option>
+                        <option>Design &amp; Visual Branding</option>
+                        <option>Events &amp; Operations Management</option>
+                        <option>Startup Incubation &amp; Research</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block font-bold text-primary-deep mb-1">
+                      <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                         Portfolio / GitHub / LinkedIn URLs (Optional)
                       </label>
                       <input
@@ -239,12 +234,12 @@ export default function JoinPage() {
                         placeholder="https://github.com/... or https://linkedin.com/in/..."
                         value={links}
                         onChange={(e) => setLinks(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-borderToken bg-canvas focus:outline-none focus:ring-1 focus:ring-primary text-body"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] placeholder:text-[var(--color-muted)] font-mono"
                       />
                     </div>
 
                     <div>
-                      <label className="block font-bold text-primary-deep mb-1">
+                      <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                         Why do you want to join E-Cell MITAOE? *
                       </label>
                       <textarea
@@ -253,14 +248,14 @@ export default function JoinPage() {
                         placeholder="Tell us what excites you about startup building, your past projects or skills, and what you hope to accomplish..."
                         value={statement}
                         onChange={(e) => setStatement(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-borderToken bg-canvas focus:outline-none focus:ring-1 focus:ring-primary text-body resize-none"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] placeholder:text-[var(--color-muted)] resize-none font-sans"
                       />
                     </div>
 
                     <div className="pt-3">
                       <button
                         type="submit"
-                        className="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-deep active:scale-[0.98] text-white py-3.5 rounded-xl font-bold transition-all shadow-sm"
+                        className="w-full inline-flex items-center justify-center gap-2 bg-[var(--accent)] hover:opacity-90 active:scale-[0.98] text-white py-3.5 rounded-full font-mono text-xs uppercase font-bold tracking-wider transition-all shadow-sm cursor-pointer"
                       >
                         <Send className="w-4 h-4" />
                         <span>Submit Core Team Application</span>
@@ -273,21 +268,21 @@ export default function JoinPage() {
 
             {/* Right Column: Track Overview & Recruitment FAQs */}
             <div className="lg:col-span-5 space-y-6">
-              <div className="bg-white p-6 sm:p-7 rounded-card border border-borderToken shadow-soft-card">
-                <h3 className="text-base font-bold text-primary-deep mb-3 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
+              <div className="bg-[var(--color-surface)] p-6 sm:p-7 rounded-2xl border border-[var(--color-border)] shadow-soft-card">
+                <h3 className="text-base font-bold text-[var(--ink)] font-display mb-3 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[var(--accent)]" />
                   <span>Available Department Tracks</span>
                 </h3>
                 <div className="space-y-3.5">
                   {tracks.map((t, idx) => (
-                    <div key={idx} className="p-3.5 rounded-xl bg-canvas border border-borderToken">
-                      <div className="text-xs font-bold text-primary-deep">
+                    <div key={idx} className="p-3.5 rounded-xl bg-[var(--bg)] border border-[var(--color-border)]">
+                      <div className="text-xs font-bold text-[var(--ink)] font-display">
                         {t.name}
                       </div>
-                      <div className="text-[11px] font-semibold text-primary/80 mb-1">
+                      <div className="text-[11px] font-semibold text-[var(--accent)] mb-1 font-sans">
                         {t.role}
                       </div>
-                      <p className="text-[11px] text-body/75 leading-relaxed">
+                      <p className="text-[11px] text-[var(--ink)]/75 leading-relaxed font-sans">
                         {t.desc}
                       </p>
                     </div>
@@ -296,23 +291,23 @@ export default function JoinPage() {
               </div>
 
               {/* FAQs */}
-              <div className="bg-surface-pale p-6 rounded-card border border-borderToken space-y-3">
-                <h3 className="text-sm font-bold text-primary-deep flex items-center gap-2">
-                  <HelpCircle className="w-4 h-4 text-primary" />
+              <div className="bg-[var(--color-surface)] p-6 rounded-2xl border border-[var(--color-border)] space-y-3 shadow-soft-card">
+                <h3 className="text-sm font-bold text-[var(--ink)] font-display flex items-center gap-2">
+                  <HelpCircle className="w-4 h-4 text-[var(--accent)]" />
                   <span>Frequently Asked Questions</span>
                 </h3>
-                <div className="text-xs space-y-2.5 text-body">
+                <div className="text-xs space-y-2.5 text-[var(--ink)]/80 font-sans">
                   <div>
-                    <span className="font-bold">Can First-Year students apply? </span>
-                    <span className="text-muted">Yes, FE students are encouraged to join as junior associates.</span>
+                    <span className="font-bold text-[var(--ink)]">Can First-Year students apply? </span>
+                    <span className="text-[var(--color-muted)]">Yes, FE students are encouraged to join as junior associates.</span>
                   </div>
                   <div>
-                    <span className="font-bold">What is the weekly time commitment? </span>
-                    <span className="text-muted">Approximately 4–6 hours per week, ramping up around flagship events.</span>
+                    <span className="font-bold text-[var(--ink)]">What is the weekly time commitment? </span>
+                    <span className="text-[var(--color-muted)]">Approximately 4–6 hours per week, ramping up around flagship events.</span>
                   </div>
                   <div>
-                    <span className="font-bold">Do I need prior startup experience? </span>
-                    <span className="text-muted">No. Enthusiasm, reliability, and readiness to learn are prioritized.</span>
+                    <span className="font-bold text-[var(--ink)]">Do I need prior startup experience? </span>
+                    <span className="text-[var(--color-muted)]">No. Enthusiasm, reliability, and readiness to learn are prioritized.</span>
                   </div>
                 </div>
               </div>
@@ -320,8 +315,6 @@ export default function JoinPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

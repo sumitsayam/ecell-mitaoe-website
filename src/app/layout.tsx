@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ModalProvider } from '@/components/modals/ModalContext';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import { PublicLayoutShell } from '@/components/layout/PublicLayoutShell';
 
 export const metadata: Metadata = {
   title: 'E-Cell MIT AOE — Ideas into Impact | Entrepreneurship & Innovation',
@@ -42,7 +43,9 @@ export default function RootLayout({
       <body className="min-h-screen bg-[var(--bg)] text-[var(--ink)] antialiased selection:bg-[var(--accent)] selection:text-white transition-colors duration-150">
         <ThemeProvider>
           <ModalProvider>
-            {children}
+            <PublicLayoutShell>
+              {children}
+            </PublicLayoutShell>
           </ModalProvider>
         </ThemeProvider>
       </body>

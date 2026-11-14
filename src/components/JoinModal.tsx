@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { X, Sparkles, CheckCircle2, Send, Rocket } from 'lucide-react';
+import { X, Sparkles, Send, Rocket } from 'lucide-react';
 
 interface JoinModalProps {
   isOpen: boolean;
@@ -41,11 +41,9 @@ export default function JoinModal({ isOpen, onClose }: JoinModalProps) {
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#0B1B3D', '#2563EB', '#F59E0B', '#10B981'],
+        colors: ['#092957', '#155EEF', '#F59E0B', '#10B981'],
       });
-    } catch (err) {
-      // Fallback
-    }
+    } catch (err) {}
   };
 
   const resetAndClose = () => {
@@ -60,30 +58,30 @@ export default function JoinModal({ isOpen, onClose }: JoinModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 animate-in fade-in duration-200">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-navy-950/70 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs"
         onClick={onClose}
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 w-full max-w-xl bg-cream-50 rounded-3xl overflow-hidden shadow-2xl border border-cream-300 max-h-[92vh] flex flex-col">
+      <div className="relative z-10 w-full max-w-xl bg-[var(--color-surface)] rounded-2xl overflow-hidden shadow-2xl border border-[var(--color-border)] max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="p-6 bg-navy-850 text-white relative flex items-start justify-between">
+        <div className="p-6 bg-[var(--color-surface)] border-b border-[var(--color-border)] text-[var(--ink)] relative flex items-start justify-between">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-cream-100 text-[10px] font-bold tracking-wider uppercase mb-2">
-              <Sparkles className="w-3 h-3 text-blue-300" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--bg)] text-[var(--accent)] border border-[var(--color-border)] text-[10px] font-mono font-bold tracking-wider uppercase mb-2">
+              <Sparkles className="w-3 h-3 text-[var(--accent)]" />
               <span>COHORT RECRUITMENT</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-white font-display">
-              Join E-Cell MITAOE Core Team
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[var(--ink)] font-display">
+              Join E-Cell MIT AOE Core Team
             </h2>
-            <p className="text-xs text-cream-200/80 mt-1">
+            <p className="text-xs text-[var(--color-muted)] mt-1 font-sans">
               Shape campus initiatives, build startups, and empower fellow engineers.
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors shrink-0"
+            className="w-8 h-8 rounded-full bg-[var(--bg)] border border-[var(--color-border)] hover:bg-[var(--accent)] hover:text-white text-[var(--ink)] flex items-center justify-center transition-colors shrink-0 cursor-pointer"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -94,22 +92,22 @@ export default function JoinModal({ isOpen, onClose }: JoinModalProps) {
         <div className="p-6 sm:p-8 overflow-y-auto">
           {submitted ? (
             <div className="text-center py-8 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto shadow-xs border border-emerald-500/20">
                 <Rocket className="w-8 h-8 animate-bounce" />
               </div>
-              <h3 className="text-2xl font-bold text-navy-950">
+              <h3 className="text-2xl font-bold text-[var(--ink)] font-display">
                 Application Received!
               </h3>
-              <p className="text-sm text-ink/80 max-w-md mx-auto leading-relaxed">
-                Thank you, <span className="font-bold text-navy-850">{fullName}</span>.
-                Your application for the <span className="font-bold">{department}</span> track has been submitted.
+              <p className="text-sm text-[var(--ink)]/80 max-w-md mx-auto leading-relaxed font-sans">
+                Thank you, <span className="font-bold text-[var(--accent)]">{fullName}</span>.
+                Your application for the <span className="font-bold text-[var(--ink)]">{department}</span> track has been submitted.
                 Our team will reach out via <span className="underline">{email}</span> for round 1 screening.
               </p>
               <div className="pt-4">
                 <button
                   onClick={resetAndClose}
                   type="button"
-                  className="px-6 py-2.5 rounded-xl bg-navy-850 text-white text-xs font-bold hover:bg-navy-900 transition-colors shadow-sm"
+                  className="px-6 py-2.5 rounded-full bg-[var(--accent)] text-white text-xs font-mono uppercase font-bold hover:opacity-90 transition-colors shadow-sm cursor-pointer"
                 >
                   Done
                 </button>
@@ -118,7 +116,7 @@ export default function JoinModal({ isOpen, onClose }: JoinModalProps) {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm">
               <div>
-                <label className="block font-bold text-navy-950 mb-1">
+                <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                   Full Name
                 </label>
                 <input
@@ -127,13 +125,13 @@ export default function JoinModal({ isOpen, onClose }: JoinModalProps) {
                   placeholder="e.g. Sumit Sayam"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-cream-300 bg-white focus:outline-none focus:ring-2 focus:ring-navy-850 text-ink"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] placeholder:text-[var(--color-muted)] font-sans"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-bold text-navy-950 mb-1">
+                  <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                     College Email / ID
                   </label>
                   <input
@@ -142,18 +140,18 @@ export default function JoinModal({ isOpen, onClose }: JoinModalProps) {
                     placeholder="student@mitaoe.ac.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-cream-300 bg-white focus:outline-none focus:ring-2 focus:ring-navy-850 text-ink"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] placeholder:text-[var(--color-muted)] font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-navy-950 mb-1">
+                  <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
                     Year of Study
                   </label>
                   <select
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-cream-300 bg-white focus:outline-none focus:ring-2 focus:ring-navy-850 text-ink"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] font-sans"
                   >
                     <option>First Year (FE)</option>
                     <option>Second Year (SE)</option>
@@ -164,50 +162,43 @@ export default function JoinModal({ isOpen, onClose }: JoinModalProps) {
               </div>
 
               <div>
-                <label className="block font-bold text-navy-950 mb-1">
-                  Preferred Department Track
+                <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
+                  Interested Department
                 </label>
                 <select
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-cream-300 bg-white focus:outline-none focus:ring-2 focus:ring-navy-850 text-ink font-medium"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] font-sans font-medium"
                 >
-                  <option>Technical & Development (Web, App, AI)</option>
-                  <option>Corporate Relations & Sponsorships</option>
-                  <option>Design & Visual Branding (UI/UX, Media)</option>
-                  <option>Events & Logistics Management</option>
-                  <option>Startup Incubation & Research</option>
+                  <option>Technical &amp; Development</option>
+                  <option>Corporate Relations &amp; Sponsorship</option>
+                  <option>Design &amp; Media</option>
+                  <option>Events &amp; Operations</option>
+                  <option>Incubation &amp; Research</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-bold text-navy-950 mb-1">
-                  Why do you want to join E-Cell MITAOE?
+                <label className="block font-bold text-[var(--ink)] mb-1 font-mono text-xs">
+                  Why do you want to join? (Brief)
                 </label>
                 <textarea
                   rows={3}
                   required
-                  placeholder="Tell us about your interests, past projects, or why you want to drive entrepreneurship on campus..."
+                  placeholder="Share a sentence or two on what drives you..."
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-cream-300 bg-white focus:outline-none focus:ring-2 focus:ring-navy-850 text-ink resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--bg)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] text-[var(--ink)] placeholder:text-[var(--color-muted)] resize-none font-sans"
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-5 py-2.5 rounded-xl border border-cream-300 text-ink/75 hover:bg-cream-100 font-semibold"
-                >
-                  Cancel
-                </button>
+              <div className="pt-2">
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-navy-850 hover:bg-navy-900 text-white font-bold transition-all shadow-sm inline-flex items-center gap-2"
+                  className="w-full py-3.5 rounded-full bg-[var(--accent)] hover:opacity-90 active:scale-95 text-white font-mono text-xs uppercase font-bold tracking-wider transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Send className="w-3.5 h-3.5" />
                   <span>Submit Application</span>
+                  <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
             </form>
