@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowRight, Calendar, MapPin } from 'lucide-react';
 import { signatureEvents, EventItem } from '@/data/events';
 import SectionHeader from '@/components/common/SectionHeader';
+import { useModals } from '@/components/modals/ModalContext';
 
 interface FeaturedEventsProps {
   onSelectEvent?: (event: EventItem) => void;
@@ -16,6 +17,8 @@ export default function FeaturedEvents({
   onSelectEvent,
   onViewAllEvents,
 }: FeaturedEventsProps) {
+  const modals = useModals();
+  const handleSelectEvent = onSelectEvent || modals.openEvent;
   return (
     <section id="events" className="py-10 md:py-16 scroll-mt-20">
       <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,24 +75,14 @@ export default function FeaturedEvents({
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-borderToken/60 flex items-center justify-between">
-                  {onSelectEvent ? (
-                    <button
-                      onClick={() => onSelectEvent(event)}
-                      type="button"
-                      className="text-xs font-bold text-primary hover:text-primary-deep flex items-center gap-1.5"
-                    >
-                      <span>Quick Preview</span>
-                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                    </button>
-                  ) : (
-                    <Link
-                      href={`/events/${event.slug}`}
-                      className="text-xs font-bold text-primary hover:text-primary-deep flex items-center gap-1.5"
-                    >
-                      <span>Event Details</span>
-                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  )}
+                  <button
+                    onClick={() => handleSelectEvent(event)}
+                    type="button"
+                    className="text-xs font-bold text-primary hover:text-primary-deep flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>Quick Preview</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                  </button>
 
                   <Link
                     href={`/events/${event.slug}`}

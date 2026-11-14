@@ -1,29 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* ── Core Blue-White Design System Tokens ── */
-  --color-background: #F8FAFF;
+  /* ── Core Editorial Design System Tokens ── */
+  --color-background: #F7F9FF;
   --color-surface: #FFFFFF;
-  --color-foreground: #101B32;
+  --color-foreground: #102A56;
+  --color-body: #26344D;
   --color-primary: #155EEF;
   --color-primary-dark: #0B347C;
   --color-primary-soft: #E7F0FF;
-  --color-muted: #6B7890;
+  --color-accent-yellow: #FFB52E;
+  --color-muted: #64748B;
   --color-border: #DCE5F2;
 
-  /* ── Dark Surfaces (Spiral & Selected Storytelling Stages) ── */
-  --color-dark: #0B1020;
-  --color-dark-surface: #121C32;
+  /* ── Dark Surfaces (Spiral & Storytelling Stages) ── */
+  --color-dark: #07090E;
+  --color-dark-surface: #0F1420;
   --color-dark-text: #F5F8FF;
 
   /* ── Architectural Blueprint Grid ── */
-  --grid-color: rgba(21, 94, 239, 0.10);
+  --grid-color: rgba(21, 94, 239, 0.08);
 
   /* ── Typography Scale ── */
-  --font-display: 'Sora', system-ui, -apple-system, sans-serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Sora', system-ui, -apple-system, sans-serif;
+  --font-sans: 'DM Sans', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SF Mono', 'Fira Code', monospace;
 
   /* ── Compatibility Aliases ── */

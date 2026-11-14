@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Calendar, MapPin, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { signatureEvents, EventItem } from '@/data/events';
+import { useModals } from '@/components/modals/ModalContext';
 
 interface HeroSectionProps {
   onExploreEvents?: () => void;
@@ -17,6 +18,8 @@ export default function HeroSection({
   onDiscoverECell,
   onSelectEvent,
 }: HeroSectionProps) {
+  const modals = useModals();
+  const handleSelectEvent = onSelectEvent || modals.openEvent;
   const [activeDeckIndex, setActiveDeckIndex] = useState(0);
   const featured = signatureEvents.slice(0, 3);
   const currentEvent = featured[activeDeckIndex] || featured[0];
@@ -205,7 +208,7 @@ export default function HeroSection({
                 {/* Card CTA */}
                 <div className="pt-2">
                   <button
-                    onClick={() => onSelectEvent && onSelectEvent(currentEvent)}
+                    onClick={() => handleSelectEvent(currentEvent)}
                     type="button"
                     className="w-full py-3 rounded-xl bg-[#F4F8FF] hover:bg-[#EAF2FF] border border-[#D9E5F5] text-[#155EEF] font-mono text-xs uppercase tracking-wider font-semibold transition-all flex items-center justify-center gap-2"
                   >

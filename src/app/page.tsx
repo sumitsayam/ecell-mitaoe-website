@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useState } from 'react';
+import React from 'react';
 import SpiralIntroStage from '@/components/intro/SpiralIntroStage';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -18,42 +16,21 @@ import StatsBar from '@/components/StatsBar';
 import JoinCtaSection from '@/components/JoinCtaSection';
 import FinalSpiralSection from '@/components/sections/FinalSpiralSection';
 import Footer from '@/components/Footer';
-import EventModal from '@/components/EventModal';
-import JoinModal from '@/components/JoinModal';
-import SearchModal from '@/components/SearchModal';
-import { EventItem } from '@/data/events';
 
 export default function HomePage() {
-  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
-  const [isJoinOpen, setIsJoinOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <main className="min-h-screen bg-white text-[#102A56] flex flex-col relative selection:bg-[#155EEF] selection:text-white">
       {/* ── STAGES 01, 02, 03: The Concentric Spiral → Aperture Zoom → Title Screen ── */}
-      <SpiralIntroStage onEnterHome={() => scrollToSection('homepage-main')} />
+      {/* 100% Reversible, scrubbed GSAP ScrollTrigger timeline */}
+      <SpiralIntroStage />
 
       {/* ── STAGE 04: Main Website (Continuous scroll transition) ── */}
       <div id="homepage-main" className="relative w-full bg-white">
         {/* Architectural Sticky Navigation Pill */}
-        <Navbar
-          onOpenSearch={() => setIsSearchOpen(true)}
-          onOpenJoin={() => setIsJoinOpen(true)}
-        />
+        <Navbar />
 
         {/* Editorial Hero Stage */}
-        <HeroSection
-          onExploreEvents={() => scrollToSection('all-events')}
-          onDiscoverECell={() => scrollToSection('about')}
-          onSelectEvent={(event) => setSelectedEvent(event)}
-        />
+        <HeroSection />
 
         {/* Verified Metrics Strip */}
         <StatsBar />
@@ -68,10 +45,7 @@ export default function HomePage() {
         <EcosystemExplorer />
 
         {/* Featured Signature Events Deck */}
-        <FeaturedEvents
-          onSelectEvent={(event) => setSelectedEvent(event)}
-          onViewAllEvents={() => scrollToSection('all-events')}
-        />
+        <FeaturedEvents />
 
         {/* Comprehensive Event Directory with Search and Status Filter */}
         <div id="all-events">
@@ -96,31 +70,14 @@ export default function HomePage() {
         <StartupToolkit />
 
         {/* Final Recruitment Statement CTA */}
-        <JoinCtaSection onOpenJoin={() => setIsJoinOpen(true)} />
+        <JoinCtaSection />
 
         {/* 11. The Final Spiral (Returning Visual Signature) */}
-        <FinalSpiralSection onOpenJoin={() => setIsJoinOpen(true)} />
+        <FinalSpiralSection />
 
         {/* Architectural Footer */}
         <Footer />
       </div>
-
-      {/* Global Modals & Dialogs */}
-      <EventModal
-        event={selectedEvent}
-        onClose={() => setSelectedEvent(null)}
-      />
-
-      <JoinModal
-        isOpen={isJoinOpen}
-        onClose={() => setIsJoinOpen(false)}
-      />
-
-      <SearchModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onSelectEvent={(event) => setSelectedEvent(event)}
-      />
     </main>
   );
 }

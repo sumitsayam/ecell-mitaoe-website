@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, X, Calendar, ArrowRight, Layers, Sparkles } from 'lucide-react';
 import { allEvents, EventItem } from '@/data/events';
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectEvent: (event: EventItem) => void;
+  onSelectEvent?: (event: EventItem) => void;
 }
 
 export default function SearchModal({
@@ -15,6 +16,7 @@ export default function SearchModal({
   onClose,
   onSelectEvent,
 }: SearchModalProps) {
+  const router = useRouter();
   const [query, setQuery] = useState('');
 
   useEffect(() => {
@@ -88,7 +90,11 @@ export default function SearchModal({
               <div
                 key={ev.id}
                 onClick={() => {
-                  onSelectEvent(ev);
+                  if (onSelectEvent) {
+                    onSelectEvent(ev);
+                  } else {
+                    router.push(`/events/${ev.slug}`);
+                  }
                   onClose();
                 }}
                 className="flex items-center justify-between p-3 rounded-xl hover:bg-cream-100/90 cursor-pointer transition-colors group"

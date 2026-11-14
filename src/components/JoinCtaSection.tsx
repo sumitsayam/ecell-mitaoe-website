@@ -3,12 +3,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
+import { useModals } from '@/components/modals/ModalContext';
 
 interface JoinCtaSectionProps {
   onOpenJoin?: () => void;
 }
 
 export default function JoinCtaSection({ onOpenJoin }: JoinCtaSectionProps) {
+  const modals = useModals();
+  const handleOpenJoin = onOpenJoin || modals.openJoin;
   const perks = [
     'Direct exposure to angel investors & prominent founders',
     'Hands-on experience organizing mega-scale hackathons',
@@ -56,24 +59,14 @@ export default function JoinCtaSection({ onOpenJoin }: JoinCtaSectionProps) {
 
               {/* CTA Action */}
               <div className="flex flex-wrap items-center gap-4">
-                {onOpenJoin ? (
-                  <button
-                    onClick={onOpenJoin}
-                    type="button"
-                    className="inline-flex items-center gap-2.5 bg-white text-primary-deep hover:bg-canvas active:scale-[0.98] px-8 py-4 rounded-xl text-sm md:text-base font-bold tracking-wide transition-all shadow-md group"
-                  >
-                    <span>Apply for Core Team</span>
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </button>
-                ) : (
-                  <Link
-                    href="/join"
-                    className="inline-flex items-center gap-2.5 bg-white text-primary-deep hover:bg-canvas active:scale-[0.98] px-8 py-4 rounded-xl text-sm md:text-base font-bold tracking-wide transition-all shadow-md group"
-                  >
-                    <span>Apply for Core Team</span>
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                )}
+                <button
+                  onClick={handleOpenJoin}
+                  type="button"
+                  className="inline-flex items-center gap-2.5 bg-white text-primary-deep hover:bg-canvas active:scale-[0.98] px-8 py-4 rounded-xl text-sm md:text-base font-bold tracking-wide transition-all shadow-md group cursor-pointer"
+                >
+                  <span>Apply for Core Team</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </button>
 
                 <Link
                   href="/events"

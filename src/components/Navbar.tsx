@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search, ArrowRight, Menu, X, Shield, Command } from 'lucide-react';
+import { useModals } from '@/components/modals/ModalContext';
 
 interface NavbarProps {
   onOpenSearch?: () => void;
@@ -11,6 +12,9 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
+  const modals = useModals();
+  const handleOpenSearch = onOpenSearch || modals.openSearch;
+  const handleOpenJoin = onOpenJoin || modals.openJoin;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -78,7 +82,7 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
         <div className="hidden sm:flex items-center gap-2.5">
           {/* Quick Search with ⌘K Badge */}
           <button
-            onClick={onOpenSearch}
+            onClick={handleOpenSearch}
             type="button"
             className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 hover:bg-white border border-[#D9E5F5] text-xs font-mono text-[#64748B] hover:text-[#155EEF] shadow-2xs transition-all cursor-pointer"
             title="Search events, team, resources (⌘K)"
@@ -100,30 +104,20 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
           </Link>
 
           {/* Primary Join CTA */}
-          {onOpenJoin ? (
-            <button
-              onClick={onOpenJoin}
-              type="button"
-              className="inline-flex items-center gap-2 bg-[#155EEF] hover:bg-[#103B83] active:scale-95 text-white px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer"
-            >
-              <span>Join E-Cell</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            </button>
-          ) : (
-            <Link
-              href="/join"
-              className="inline-flex items-center gap-2 bg-[#155EEF] hover:bg-[#103B83] active:scale-95 text-white px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider font-semibold transition-all shadow-sm hover:shadow-md"
-            >
-              <span>Join E-Cell</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            </Link>
-          )}
+          <button
+            onClick={handleOpenJoin}
+            type="button"
+            className="inline-flex items-center gap-2 bg-[#155EEF] hover:bg-[#103B83] active:scale-95 text-white px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer"
+          >
+            <span>Join E-Cell</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          </button>
         </div>
 
         {/* Mobile Buttons */}
         <div className="flex lg:hidden items-center gap-2">
           <button
-            onClick={onOpenSearch}
+            onClick={handleOpenSearch}
             type="button"
             aria-label="Search"
             className="p-2 text-[#102A56] hover:bg-white rounded-lg border border-transparent hover:border-[#D9E5F5] transition-colors"
