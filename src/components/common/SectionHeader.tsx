@@ -30,17 +30,17 @@ export default function SectionHeader({
       <div className="max-w-2xl">
         {/* Overline with Horizontal Accent Rule */}
         <div className="flex items-center gap-3 mb-2.5">
-          <span className="text-[11px] font-bold tracking-[0.24em] text-navy-850 uppercase">
+          <span className="text-[11px] font-mono font-bold tracking-[0.24em] text-[var(--accent)] uppercase">
             {overline}
           </span>
-          <span className="w-16 sm:w-20 h-[2px] bg-navy-850" />
+          <span className="w-16 sm:w-20 h-[2px] bg-[var(--accent)]" />
         </div>
 
         {/* Section Heading */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-navy-950 font-display tracking-tight leading-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[var(--ink)] font-display tracking-tight leading-tight">
           {title}{' '}
           {italicWord && (
-            <span className="font-serif italic font-normal text-navy-850">
+            <span className="font-serif italic font-normal text-[var(--accent)]">
               {italicWord}
             </span>
           )}
@@ -48,7 +48,7 @@ export default function SectionHeader({
 
         {/* Optional Description */}
         {description && (
-          <p className="text-sm sm:text-base text-ink/80 mt-3 font-normal leading-relaxed">
+          <p className="text-sm sm:text-base text-[var(--ink)]/80 mt-3 font-sans font-normal leading-relaxed">
             {description}
           </p>
         )}
@@ -60,7 +60,7 @@ export default function SectionHeader({
           {actionHref ? (
             <Link
               href={actionHref}
-              className="inline-flex items-center gap-2 text-sm font-bold text-navy-850 hover:text-navy-700 tracking-wide group py-1 border-b border-navy-850/30 hover:border-navy-850 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-sans font-semibold text-[var(--accent)] hover:underline tracking-wide group py-1"
             >
               <span>{actionText}</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -69,7 +69,7 @@ export default function SectionHeader({
             <button
               onClick={onActionClick}
               type="button"
-              className="inline-flex items-center gap-2 text-sm font-bold text-navy-850 hover:text-navy-700 tracking-wide group py-1 border-b border-navy-850/30 hover:border-navy-850 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-sans font-semibold text-[var(--accent)] hover:underline tracking-wide group py-1 cursor-pointer"
             >
               <span>{actionText}</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

@@ -12,26 +12,18 @@ interface SectionLabelProps {
 export default function SectionLabel({
   number,
   label,
-  dark = false,
   className = '',
 }: SectionLabelProps) {
   return (
-    <div className={`inline-flex items-center gap-2.5 font-mono text-xs uppercase tracking-wider ${className}`}>
+    <div className={`inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider ${className}`}>
       {number && (
-        <span
-          className={`px-1.5 py-0.5 rounded font-medium ${
-            dark
-              ? 'bg-white/10 text-white border border-white/20'
-              : 'bg-primary/5 text-primary border border-primary/15'
-          }`}
-        >
+        <span className="px-1.5 py-0.5 rounded font-medium bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
           {number}
         </span>
       )}
-      <span className={dark ? 'text-slate-400 font-medium' : 'text-body-muted font-medium'}>
+      <span className="text-[var(--accent)] font-bold tracking-[0.2em] text-[11px]">
         {label}
       </span>
     </div>
   );
 }
-
