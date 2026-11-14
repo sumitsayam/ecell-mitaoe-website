@@ -7,7 +7,7 @@ import { Target, Compass, Lightbulb, Rocket, ShieldCheck, CheckCircle2, ArrowRig
 import SectionHeader from '@/components/common/SectionHeader';
 
 export const metadata = {
-  title: 'About E-Cell MITAOE | Mission, Vision & Incubation Framework',
+  title: 'About E-Cell MIT AOE | Mission, Vision & Incubation Framework',
   description: 'Learn about MIT Academy of Engineering’s official Entrepreneurship Cell, CIIE incubation center, and student venture ecosystem.',
 };
 

@@ -9,6 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        bg: 'var(--bg)',
+        ink: 'var(--ink)',
+        line: 'var(--line)',
         background: {
           DEFAULT: '#F8FAFF',
           soft: '#E7F0FF',
@@ -73,6 +76,7 @@ const config: Config = {
           dark: '#0B1020',
         },
         accent: {
+          DEFAULT: 'var(--accent)',
           blue: '#155EEF',
           orange: '#EE7747',
           yellow: '#F2C95C',

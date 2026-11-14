@@ -4,13 +4,20 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root, :root[data-theme="light"] {
+  /* ── Core Editorial Theme Tokens ── */
+  --bg: #f6f7fa;
+  --ink: #14224a;
+  --accent: #2b5ce6;
+  --line: rgba(20, 34, 74, 0.08);
+  --cell: 32px;
+
   /* ── Core Editorial Design System Tokens ── */
-  --color-background: #F7F9FF;
+  --color-background: var(--bg);
   --color-surface: #FFFFFF;
-  --color-foreground: #102A56;
+  --color-foreground: var(--ink);
   --color-body: #26344D;
-  --color-primary: #155EEF;
+  --color-primary: var(--accent);
   --color-primary-dark: #0B347C;
   --color-primary-soft: #E7F0FF;
   --color-accent-yellow: #FFB52E;
@@ -23,7 +30,7 @@
   --color-dark-text: #F5F8FF;
 
   /* ── Architectural Blueprint Grid ── */
-  --grid-color: rgba(21, 94, 239, 0.08);
+  --grid-color: var(--line);
 
   /* ── Typography Scale ── */
   --font-display: 'Space Grotesk', 'Sora', system-ui, -apple-system, sans-serif;
@@ -31,12 +38,53 @@
   --font-mono: 'IBM Plex Mono', 'SF Mono', 'Fira Code', monospace;
 
   /* ── Compatibility Aliases ── */
-  --background: var(--color-background);
-  --foreground: var(--color-foreground);
-  --primary: var(--color-primary);
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --primary: var(--accent);
   --primary-dark: var(--color-primary-dark);
   --muted: var(--color-muted);
   --border: var(--color-border);
+}
+
+[data-theme="dark"] {
+  --bg: #0b0c10;
+  --ink: #eef0f5;
+  --accent: #5b86ff;
+  --line: rgba(238, 240, 245, 0.08);
+
+  --color-background: var(--bg);
+  --color-surface: #10141e;
+  --color-foreground: var(--ink);
+  --color-body: #c7d2e5;
+  --color-primary: var(--accent);
+  --color-primary-soft: #14224a;
+  --color-border: rgba(238, 240, 245, 0.12);
+  --color-muted: #94A3B8;
+
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --primary: var(--accent);
+  --border: rgba(238, 240, 245, 0.12);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --cell: 24px;
+  }
+}
+
+/* ── Zero-Hydration-Mismatch CSS Theme Toggle ── */
+[data-theme="dark"] .theme-toggle-sun {
+  display: block !important;
+}
+[data-theme="dark"] .theme-toggle-moon {
+  display: none !important;
+}
+:root:not([data-theme="dark"]) .theme-toggle-sun {
+  display: none !important;
+}
+:root:not([data-theme="dark"]) .theme-toggle-moon {
+  display: block !important;
 }
 
 @layer base {

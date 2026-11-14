@@ -7,8 +7,8 @@ import { initiativesData } from '@/data/initiatives';
 import SectionHeader from '@/components/common/SectionHeader';
 
 export const metadata = {
-  title: 'Initiatives & Incubation Programs | E-Cell MITAOE',
-  description: 'Explore MITAOE E-Cell initiatives including the Venture Incubation Studio, E-Summit, Angel Network, and Corporate Challenges.',
+  title: 'Initiatives & Incubation Programs | E-Cell MIT AOE',
+  description: 'Explore E-Cell MIT AOE initiatives including the Venture Incubation Studio, E-Summit, Angel Network, and Corporate Challenges.',
 };
 
 export default function InitiativesPage() {

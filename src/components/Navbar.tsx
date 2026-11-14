@@ -52,8 +52,8 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
             EC
           </div>
           <div className="flex flex-col">
-            <span className="text-sm sm:text-base font-bold tracking-tight text-[#102A56] leading-none font-display">
-              E-CELL MITAOE
+            <span className="text-sm sm:text-base font-bold tracking-tight text-[var(--ink)] leading-none font-display">
+              E-Cell MIT AOE
             </span>
             <span className="text-[9px] font-mono tracking-widest text-[#64748B] uppercase mt-0.5">
               IDEAS INTO IMPACT

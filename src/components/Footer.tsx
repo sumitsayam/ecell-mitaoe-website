@@ -19,7 +19,7 @@ export default function Footer() {
               </div>
               <div className="flex flex-col">
                 <span className="text-base font-extrabold tracking-tight text-primary-deep leading-none font-display">
-                  E-CELL MITAOE
+                  E-Cell MIT AOE
                 </span>
                 <span className="text-[9px] font-semibold tracking-[0.22em] text-muted uppercase mt-1 leading-none">
                   ENTREPRENEURSHIP & INNOVATION
