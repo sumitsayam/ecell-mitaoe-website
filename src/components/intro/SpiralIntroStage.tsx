@@ -111,7 +111,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       onEnterHome();
       return;
     }
-    const target = document.getElementById('homepage-main');
+    const target = document.getElementById('ecosystem-breakpoint') || document.getElementById('homepage-main');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     }

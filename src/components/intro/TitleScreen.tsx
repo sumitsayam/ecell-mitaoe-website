@@ -1,17 +1,19 @@
 'use client';
 
 import React from 'react';
+import { ArrowDown } from 'lucide-react';
 
 /* ────────────────────────────────────────────────────────────────────────
- *  TitleScreen (Stage 03) — Minimal, Architectural "MITAOE E-CELL"
+ *  TitleScreen (Stage 03) — Full-Page Architectural Identity Cover Plate
  *
  *  Design specifications:
- *  • Nearly empty full-screen composition
- *  • Large confident Sora display typography: "MITAOE" / "E-CELL"
- *  • Layered paper-cutout physical sheets with subtle offset & soft shadows
- *  • Technical blue blueprint grid + subtle corner tick-marks
- *  • Monospace coordinates: ALANDI, PUNE // 18.6756° N, 73.8906° E
- *  • No cards, no CTA buttons, no navigation
+ *  • Spans 100% full-screen edge-to-edge across the entire page
+ *  • Architectural blueprint grid (36px major, 9px minor) across full viewport
+ *  • Precise corner tick-marks (+) at viewport boundaries
+ *  • Full-width top metadata strip (PLATE 001 // IDENTITY)
+ *  • Colossal Sora display typography: "MITAOE" / "E-CELL"
+ *  • Full-width bottom technical coordinates: ALANDI, PUNE // 18.6756° N, 73.8906° E
+ *  • Architectural breakpoint cue leading directly into E-Cell MITAOE ecosystem
  * ────────────────────────────────────────────────────────────────────── */
 
 interface TitleScreenProps {
@@ -23,9 +25,9 @@ export default function TitleScreen({ onScrollCueClick, className = '' }: TitleS
   return (
     <section
       id="title-screen"
-      className={`relative w-full min-h-screen flex flex-col justify-between items-center bg-[#FFFFFF] text-[#102A56] overflow-hidden select-none p-6 sm:p-12 ${className}`}
+      className={`relative w-full h-full min-h-screen flex flex-col justify-between bg-white text-[#102A56] overflow-hidden select-none p-6 sm:p-10 lg:p-14 ${className}`}
     >
-      {/* ── Layer 1: Blueprint architectural grid ── */}
+      {/* ── Layer 1: Blueprint architectural grid running full-bleed ── */}
       <div
         className="absolute inset-0 pointer-events-none opacity-60"
         style={{
@@ -49,93 +51,92 @@ export default function TitleScreen({ onScrollCueClick, className = '' }: TitleS
         }}
       />
 
-      {/* ── Layer 3: Paper Cutout Planes (Stacked architectural sheets) ── */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-        {/* Deep paper sheet (offset -1.8deg) */}
-        <div
-          className="absolute w-[92vw] max-w-5xl h-[70vh] rounded-2xl bg-[#F4F8FF] border border-[#D9E5F5]/70"
-          style={{
-            transform: 'rotate(-1.6deg)',
-            boxShadow: '0 30px 60px -15px rgba(21, 94, 239, 0.06)',
-          }}
-        />
+      {/* ── Layer 3: Precise corner tick-marks in the actual viewport corners ── */}
+      <span className="absolute top-4 sm:top-6 left-4 sm:left-6 font-mono text-sm sm:text-base text-[#155EEF]/60 select-none font-bold">
+        +
+      </span>
+      <span className="absolute top-4 sm:top-6 right-4 sm:right-6 font-mono text-sm sm:text-base text-[#155EEF]/60 select-none font-bold">
+        +
+      </span>
+      <span className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 font-mono text-sm sm:text-base text-[#155EEF]/60 select-none font-bold">
+        +
+      </span>
+      <span className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 font-mono text-sm sm:text-base text-[#155EEF]/60 select-none font-bold">
+        +
+      </span>
 
-        {/* Mid paper sheet (offset +1.2deg) */}
-        <div
-          className="absolute w-[90vw] max-w-5xl h-[68vh] rounded-2xl bg-[#FFFFFF] border border-[#D9E5F5]"
-          style={{
-            transform: 'rotate(1.2deg)',
-            boxShadow: '0 20px 45px -10px rgba(16, 42, 86, 0.06)',
-          }}
-        />
+      {/* ── Layer 4: Top Metadata Strip (Spanning full width) ── */}
+      <header className="relative z-10 w-full flex items-center justify-between font-mono text-[11px] sm:text-xs uppercase tracking-widest text-[#64748B]">
+        <div className="flex items-center gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#155EEF] animate-pulse inline-block" />
+          <span className="font-bold text-[#102A56] tracking-wider">PLATE 001 // IDENTITY</span>
+        </div>
 
-        {/* Foreground paper sheet (center, pure crisp plane) */}
-        <div
-          className="relative w-[88vw] max-w-5xl h-[66vh] rounded-2xl bg-[#FFFFFF] border border-[#D9E5F5] flex flex-col justify-between p-8 sm:p-14"
-          style={{
-            boxShadow: '0 25px 50px -12px rgba(21, 94, 239, 0.08), 0 0 0 1px rgba(21, 94, 239, 0.04)',
-          }}
-        >
-          {/* Paper sheet corner markings */}
-          <span className="absolute top-3 left-3 font-mono text-[10px] text-[#155EEF]/50 select-none">+</span>
-          <span className="absolute top-3 right-3 font-mono text-[10px] text-[#155EEF]/50 select-none">+</span>
-          <span className="absolute bottom-3 left-3 font-mono text-[10px] text-[#155EEF]/50 select-none">+</span>
-          <span className="absolute bottom-3 right-3 font-mono text-[10px] text-[#155EEF]/50 select-none">+</span>
+        <div className="hidden sm:flex items-center gap-3">
+          <span>EST. 2018</span>
+          <span className="text-[#CBD5E1]">·</span>
+          <span>CIIE MITAOE</span>
+          <span className="text-[#CBD5E1]">·</span>
+          <span className="text-[#155EEF] font-semibold">PUNE, IN</span>
+        </div>
 
-          {/* Top metadata strip */}
-          <div className="flex items-center justify-between font-mono text-[10px] sm:text-xs uppercase tracking-widest text-[#64748B]">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#155EEF] inline-block" />
-              <span className="font-semibold text-[#102A56]">PLATE 001 // IDENTITY</span>
-            </div>
-            <div className="hidden sm:block">
-              <span>EST. 2018 · CIIE MITAOE</span>
-            </div>
-            <div>
-              <span className="text-[#155EEF]">PUNE, IN</span>
-            </div>
+        <div className="flex items-center gap-2 text-right">
+          <span className="text-[#155EEF] font-semibold">ALANDI CAMPUS</span>
+          <span className="hidden md:inline text-[#94A3B8]">· 18.6756° N</span>
+        </div>
+      </header>
+
+      {/* ── Layer 5: Massive Central Display Typography (Edge-to-Edge Hero) ── */}
+      <main className="relative z-10 my-auto w-full text-center flex flex-col items-center justify-center py-8 sm:py-14">
+        <h1 className="font-display font-extrabold text-7xl sm:text-9xl md:text-[11rem] lg:text-[13rem] xl:text-[15rem] tracking-tighter text-[#102A56] leading-[0.84] select-none">
+          <span className="block transform transition-transform duration-500 hover:scale-[1.01]">
+            MITAOE
+          </span>
+          <span className="block text-[#155EEF] transform transition-transform duration-500 hover:scale-[1.01]">
+            E-CELL
+          </span>
+        </h1>
+
+        {/* Editorial rule and tagline */}
+        <div className="mt-6 sm:mt-10 flex items-center justify-center gap-4 sm:gap-6 text-xs sm:text-base font-mono uppercase tracking-[0.25em] text-[#64748B]">
+          <span className="h-px w-10 sm:w-24 bg-[#DCE5F2]" />
+          <span className="text-[#102A56] font-semibold">Ideas are only the beginning.</span>
+          <span className="h-px w-10 sm:w-24 bg-[#DCE5F2]" />
+        </div>
+      </main>
+
+      {/* ── Layer 6: Bottom Technical Registration & Interactive Cue ── */}
+      <footer className="relative z-10 w-full flex flex-col gap-4">
+        <div className="flex items-center justify-between font-mono text-[10px] sm:text-xs text-[#94A3B8] uppercase tracking-wider pt-3 border-t border-[#D9E5F5]/80">
+          <div className="flex items-center gap-2">
+            <span className="text-[#102A56] font-semibold">SECTION // 001</span>
+            <span>·</span>
+            <span>COVER PLATE</span>
           </div>
 
-          {/* Massive central display typography */}
-          <div className="my-auto text-center flex flex-col items-center justify-center py-6 sm:py-10">
-            <h1 className="font-display font-extrabold text-6xl sm:text-8xl md:text-9xl lg:text-[10.5rem] tracking-tighter text-[#102A56] leading-[0.88] select-none">
-              <span className="block transform transition-transform hover:scale-[1.01] duration-500">MITAOE</span>
-              <span className="block text-[#155EEF] transform transition-transform hover:scale-[1.01] duration-500">
-                E-CELL
-              </span>
-            </h1>
-
-            {/* Subtle editorial rule and tagline */}
-            <div className="mt-6 sm:mt-8 flex items-center gap-4 text-xs sm:text-sm font-mono uppercase tracking-[0.22em] text-[#6B7890]">
-              <span className="h-px w-8 sm:w-16 bg-[#DCE5F2]" />
-              <span className="text-[#101B32] font-semibold">Ideas are only the beginning.</span>
-              <span className="h-px w-8 sm:w-16 bg-[#DCE5F2]" />
-            </div>
+          <div className="hidden md:flex items-center gap-2 text-[#64748B]">
+            <span>ENTREPRENEURSHIP CELL</span>
+            <span>·</span>
+            <span>ARCHITECTURAL EDITION</span>
           </div>
 
-          {/* Bottom coordinates and technical registration */}
-          <div className="flex items-center justify-between font-mono text-[10px] sm:text-xs text-[#94A3B8] uppercase tracking-wider">
-            <span>LAT 18.6756° N</span>
-            <span className="hidden md:inline text-[#64748B]">ENTREPRENEURSHIP CELL · ARCHITECTURAL EDITION</span>
+          <div className="flex items-center gap-2">
             <span>LON 73.8906° E</span>
           </div>
         </div>
-      </div>
 
-      {/* ── Layer 4: Interactive scroll-cue at very bottom ── */}
-      <div className="relative z-20 pb-2">
-        <button
-          onClick={onScrollCueClick}
-          type="button"
-          className="group flex flex-col items-center gap-2 cursor-pointer font-mono text-[11px] uppercase tracking-widest text-[#64748B] hover:text-[#155EEF] transition-colors"
-        >
-          <span>Scroll to explore</span>
-          <div className="w-5 h-8 rounded-full border border-[#D9E5F5] group-hover:border-[#155EEF] flex items-start justify-center p-1 transition-colors">
-            <div className="w-1 h-2 rounded-full bg-[#155EEF] animate-bounce" />
-          </div>
-        </button>
-      </div>
+        {/* Interactive Cue to Dive into Ecosystem */}
+        <div className="flex justify-center w-full pt-1">
+          <button
+            onClick={onScrollCueClick}
+            type="button"
+            className="group inline-flex items-center gap-2.5 cursor-pointer font-mono text-[11px] sm:text-xs uppercase tracking-widest text-[#64748B] hover:text-[#155EEF] transition-all py-1.5 px-4 rounded-full border border-[#D9E5F5] hover:border-[#155EEF] bg-white/80 backdrop-blur-xs active:scale-95 shadow-xs"
+          >
+            <span>Scroll to explore ecosystem</span>
+            <ArrowDown className="w-3.5 h-3.5 text-[#155EEF] animate-bounce" />
+          </button>
+        </div>
+      </footer>
     </section>
   );
 }
-
