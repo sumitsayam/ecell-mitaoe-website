@@ -75,3 +75,4 @@ Before reporting completion or committing changes, execute:
 npm run build   # Must compile with 22/22 routes and 0 TypeScript errors
 npm test        # Must pass all route HTTP 200 checks and image payload assertions
 ```
+

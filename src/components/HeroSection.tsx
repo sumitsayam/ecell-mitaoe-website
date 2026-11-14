@@ -72,8 +72,11 @@ export default function HeroSection({
             </h1>
 
             {/* Subtitle Statement */}
-            <p className="text-base sm:text-lg text-[#64748B] max-w-lg font-normal leading-relaxed mb-8 font-sans">
-              A community of innovators, thinkers and aspiring entrepreneurs turning ambitious ideas into meaningful impact.
+            <p className="text-base sm:text-lg text-[#102A56] font-medium leading-relaxed mb-2 font-sans">
+              Ideas don&apos;t build themselves.
+            </p>
+            <p className="text-sm sm:text-base text-[#64748B] max-w-lg font-normal leading-relaxed mb-8 font-sans">
+              The campus venture engine converting student curiosity into audited startups. ₹25L pre-seed grants, rapid prototyping makerspaces, 100% reimbursed patent filings, and direct access to Western India&apos;s sharpest builder cohort.
             </p>
 
             {/* Primary Action Buttons */}

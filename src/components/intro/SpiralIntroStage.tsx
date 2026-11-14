@@ -2,26 +2,30 @@
 
 import React, { useRef, useEffect, useCallback } from 'react';
 import TitleScreen from './TitleScreen';
-import { ArrowDown, ArrowUpRight, Play } from 'lucide-react';
+import { ArrowDown, Sparkles } from 'lucide-react';
 
 /* ────────────────────────────────────────────────────────────────────────
- *  SpiralIntroStage — Signature Reversible Editorial Spiral
+ *  SpiralIntroStage — Signature Concentric Editorial Spiral
  *
- *  Mathematically calibrated against the reference:
- *  • R(k) = R0 * 1.28^k, where R0 = 0.05 * min(viewportWidth, viewportHeight)
- *  • fs(R) = 9 + 0.045 * R px
- *  • n = floor(2 * PI * R / (0.66 * fs))
- *  • theta = a0 - i * (2 * PI / n), rotated by (theta - PI/2)
- *  • Letter tops point inward, reading left-to-right at the bottom
- *  • Alternate rings spin opposite: speed = 0.06 / (1 + 0.12k) rad/s
- *  • 1.8s scattered-letter random threshold load-in (single pass)
- *  • Desktop mask: mask-image linear gradient prevents copy overlap
- *  • Mobile layout: centered rings with copy isolated below
- *  • High performance: ctx.setTransform, font set per ring, DPR <= 1.5,
- *    culling inside aperture & outside bounds, zero React renders in RAF
+ *  Faithfully reproduces the interaction and pacing of contentarchitecture.dev:
+ *  • Full-screen dark canvas (#07090E) with subtle 22px pitch dot grid
+ *  • 9 concentric rotating text rings centered in viewport (cx = w/2, cy = h/2)
+ *  • Phrase: 'ENTREPRENEURSHIP CELL · MIT AOE PUNE · BUILDERS · IDEAS INTO IMPACT · '
+ *  • Tops of characters point inward toward center (rot = theta - PI/2)
+ *  • Reads left-to-right at the bottom
+ *  • Alternate rings spin in opposite directions with calibrated angular velocities
+ *  • 1.8s single-pass scattered letter reveal on load (organic gappy matrix look)
+ *  • Floating architectural capsule header at top with navigation links + marquee
+ *  • Interactive "CLICK & HOLD" / "SCROLL TO DIVE" pill with circular SVG progress
+ *  • "LEARN MORE" pill at bottom-right
+ *  • Reversible GSAP ScrollTrigger aperture zoom:
+ *    - Circular hole punches cleanly through canvas with destination-out
+ *    - Sharp white glowing ring borders the aperture
+ *    - Reveals TitleScreen ('PLATE 001 // IDENTITY - MITAOE E-CELL') strictly inside the circle
+ *    - Expands smoothly to 100% viewport, transitioning seamlessly into the homepage
  * ────────────────────────────────────────────────────────────────────── */
 
-const RING_COUNT = 12;
+const RING_COUNT = 9;
 const REPEATED_PHRASE = 'ENTREPRENEURSHIP CELL · MIT AOE PUNE · BUILDERS · IDEAS INTO IMPACT · ';
 
 interface RingData {
@@ -39,14 +43,16 @@ interface SpiralIntroStageProps {
 export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps) {
   const pinWrapperRef = useRef<HTMLDivElement>(null);
   const stickyContainerRef = useRef<HTMLDivElement>(null);
+  const titleScreenWrapperRef = useRef<HTMLDivElement>(null);
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const offscreenGridRef = useRef<HTMLCanvasElement | null>(null);
 
   // UI DOM Refs (Zero React re-renders)
-  const heroOverlayRef = useRef<HTMLDivElement>(null);
+  const topNavRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
+  const exploreBtnRef = useRef<HTMLDivElement>(null);
   const progressRingRef = useRef<SVGCircleElement>(null);
 
   // Rings dynamic data
@@ -61,9 +67,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   const scrollProgressRef = useRef<number>(0);
   const currentProgressRef = useRef<number>(0);
   const isHoldingRef = useRef<boolean>(false);
-  const isDesktopRef = useRef<boolean>(false);
   const isVisibleRef = useRef<boolean>(true);
-  const slowFrameCountRef = useRef<number>(0);
   const dprCapRef = useRef<number>(1.5);
   const reducedMotionRef = useRef<boolean>(false);
 
@@ -83,15 +87,13 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   const renderFrame = useCallback((canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, dpr: number) => {
     const w = canvas.width;
     const h = canvas.height;
-    const isDesktop = isDesktopRef.current;
-
-    // Center coordinates
     const p = currentProgressRef.current;
-    // On desktop, rings center gently at 0.55w initially, transitioning to 0.5w
-    const cx = isDesktop ? (w * (0.55 - 0.05 * Math.min(1, p / 0.35))) : (w / 2);
+
+    // Rings are always centered in the viewport
+    const cx = w / 2;
     const cy = h / 2;
 
-    // 1. Clear background
+    // 1. Clear with solid dark background
     ctx.fillStyle = '#07090E';
     ctx.fillRect(0, 0, w, h);
 
@@ -100,18 +102,19 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       ctx.drawImage(offscreenGridRef.current, 0, 0);
     }
 
-    // 3. Zoom Scale
+    // 3. Zoom Scale (smooth quadratic acceleration)
     const zoomScale = 1 + Math.pow(p, 2.2) * 11.0;
 
-    // 4. Aperture radius calculation (p > 0.32)
+    // 4. Aperture radius calculation (opens when p > 0.18)
     let holeRadius = 0;
-    if (p > 0.32) {
-      const apertureProgress = (p - 0.32) / 0.60;
-      const maxRadius = Math.hypot(w, h) / 2 + 80 * dpr;
+    if (p > 0.18) {
+      const apertureProgress = (p - 0.18) / 0.74;
+      const maxRadius = Math.hypot(w, h) / 2 + 100 * dpr;
       holeRadius = Math.pow(apertureProgress, 2.1) * maxRadius;
     }
 
     const reveal = revealProgressRef.current;
+    const isRevealComplete = reveal >= 1.0;
     const rings = ringsDataRef.current;
     const angles = anglesRef.current;
 
@@ -125,27 +128,26 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       const scaledR = ring.radius * zoomScale;
       const scaledFs = ring.fontSize * Math.pow(zoomScale, 0.62);
 
-      // Cull whole ring if inside aperture
+      // Cull whole ring if completely inside aperture
       if (holeRadius > 0 && scaledR + scaledFs < holeRadius) {
         continue;
       }
 
-      // Cull if scaled far out of view
-      if (scaledR > Math.hypot(w, h) + 200 * dpr) {
+      // Cull if scaled far out of viewport
+      if (scaledR - scaledFs > Math.hypot(w, h) / 2 + 100 * dpr) {
         continue;
       }
 
-      // Fade out outer rings as aperture expands
+      // Smooth alpha fade as aperture grows
       let alpha = 0.88;
-      if (p > 0.25) {
-        const fadeThreshold = 0.25 + (k / rings.length) * 0.45;
+      if (p > 0.20) {
+        const fadeThreshold = 0.20 + (k / rings.length) * 0.40;
         if (p > fadeThreshold) {
           alpha *= Math.max(0, 1 - (p - fadeThreshold) / 0.35);
         }
       }
       if (alpha <= 0.02) continue;
 
-      // Set font once per ring
       ctx.font = `500 ${scaledFs}px 'IBM Plex Mono', 'Space Mono', monospace`;
       ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
 
@@ -156,8 +158,8 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       const thresholds = ring.thresholds;
 
       for (let i = 0; i < n; i++) {
-        // 1.8s scattered letter reveal check
-        if (thresholds[i] > reveal) continue;
+        // Load-in reveal check during first 1.8s
+        if (!isRevealComplete && thresholds[i] > reveal) continue;
 
         // Angle & Position: theta = a0 - i * (2*PI/n)
         const theta = a0 - i * step;
@@ -193,7 +195,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
 
     // 6. Aperture Punch & Glowing Edge
     if (holeRadius > 2) {
-      // Punch circular hole straight through canvas
+      // Punch circular hole straight through canvas to reveal TitleScreen beneath
       ctx.save();
       ctx.globalCompositeOperation = 'destination-out';
       ctx.beginPath();
@@ -201,10 +203,10 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       ctx.fill();
       ctx.restore();
 
-      // Sharp white glowing boundary stroke
+      // Sharp glowing boundary stroke around aperture
       ctx.beginPath();
       ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, 0.75 - (p - 0.32) * 0.8)})`;
+      ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, 0.75 - (p - 0.18) * 0.85)})`;
       ctx.lineWidth = 1.6 * dpr;
       ctx.stroke();
     }
@@ -224,7 +226,6 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       return;
     }
 
-    const frameStart = performance.now();
     const dpr = Math.min(window.devicePixelRatio || 1, dprCapRef.current);
     const dt = lastTimeRef.current ? Math.min(0.04, (timestamp - lastTimeRef.current) / 1000) : 0.016;
     lastTimeRef.current = timestamp;
@@ -236,8 +237,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     if (reducedMotionRef.current) {
       revealProgressRef.current = 1.0;
     } else if (revealProgressRef.current < 1.0) {
-      const elapsed = (timestamp - loadStartTimeRef.current) / 1800; // 1.8s
-      // Ease out cubic
+      const elapsed = (timestamp - loadStartTimeRef.current) / 1800;
       const eased = Math.min(1.0, 1 - Math.pow(1 - Math.min(1, elapsed), 3));
       revealProgressRef.current = eased;
     }
@@ -259,71 +259,58 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
 
     // Lerp current progress to actual scroll progress
     const targetP = scrollProgressRef.current;
-    currentProgressRef.current += (targetP - currentProgressRef.current) * 0.16;
+    currentProgressRef.current += (targetP - currentProgressRef.current) * 0.18;
     const p = currentProgressRef.current;
 
     // ── Direct DOM updates (zero React re-renders) ──
-    if (heroOverlayRef.current) {
-      const heroAlpha = Math.max(0, 1 - p * 3.4);
-      heroOverlayRef.current.style.opacity = heroAlpha.toFixed(3);
-      heroOverlayRef.current.style.transform = `translateX(${(-p * 35).toFixed(1)}px)`;
-      heroOverlayRef.current.style.pointerEvents = heroAlpha > 0.08 ? 'auto' : 'none';
+
+    // 1. Top Navigation Bar: fades out as user scrolls
+    if (topNavRef.current) {
+      const topAlpha = Math.max(0, 1 - p * 3.5);
+      topNavRef.current.style.opacity = topAlpha.toFixed(3);
+      topNavRef.current.style.pointerEvents = topAlpha > 0.1 ? 'auto' : 'none';
+      topNavRef.current.style.transform = `translateY(${(-p * 30).toFixed(1)}px)`;
     }
 
+    // 2. Center Pill (CLICK & HOLD)
     if (pillRef.current) {
-      let pillAlpha = 0;
-      if (p < 0.45) {
-        pillAlpha = 1;
-      } else if (p < 0.65) {
-        pillAlpha = Math.max(0, 1 - (p - 0.45) / 0.20);
-      }
+      const pillAlpha = Math.max(0, 1 - p * 3.2);
       pillRef.current.style.opacity = pillAlpha.toFixed(3);
-      pillRef.current.style.pointerEvents = pillAlpha > 0.15 ? 'auto' : 'none';
+      pillRef.current.style.pointerEvents = pillAlpha > 0.1 ? 'auto' : 'none';
+      pillRef.current.style.transform = `translateY(${(p * 25).toFixed(1)}px)`;
     }
 
+    // 3. SVG Progress Ring
     if (progressRingRef.current) {
       const circumference = 2 * Math.PI * 18;
       const strokeDashoffset = circumference * (1 - p);
       progressRingRef.current.style.strokeDashoffset = strokeDashoffset.toFixed(1);
     }
 
+    // 4. Explore Button (bottom right)
+    if (exploreBtnRef.current) {
+      const btnAlpha = Math.max(0, 1 - p * 3.5);
+      exploreBtnRef.current.style.opacity = btnAlpha.toFixed(3);
+      exploreBtnRef.current.style.pointerEvents = btnAlpha > 0.1 ? 'auto' : 'none';
+    }
+
+    // 5. TitleScreen pointer events when aperture fully opens
+    if (titleScreenWrapperRef.current) {
+      titleScreenWrapperRef.current.style.pointerEvents = p > 0.85 ? 'auto' : 'none';
+    }
+
+    // 6. Canvas Wrapper (fades at the very end p > 0.88)
     if (canvasWrapperRef.current) {
       const canvasAlpha = p > 0.88 ? Math.max(0, 1 - (p - 0.88) / 0.12) : 1;
       canvasWrapperRef.current.style.opacity = canvasAlpha.toFixed(3);
       canvasWrapperRef.current.style.pointerEvents = p > 0.85 ? 'none' : 'auto';
-
-      // Desktop copy protection mask: only active at initial scroll (p < 0.35)
-      if (isDesktopRef.current) {
-        if (p < 0.35) {
-          canvasWrapperRef.current.style.maskImage = 'linear-gradient(to right, transparent 0%, transparent 38%, #000 62%)';
-          canvasWrapperRef.current.style.webkitMaskImage = 'linear-gradient(to right, transparent 0%, transparent 38%, #000 62%)';
-        } else {
-          canvasWrapperRef.current.style.maskImage = 'none';
-          canvasWrapperRef.current.style.webkitMaskImage = 'none';
-        }
-      } else {
-        canvasWrapperRef.current.style.maskImage = 'none';
-        canvasWrapperRef.current.style.webkitMaskImage = 'none';
-      }
     }
 
-    // Render frame
+    // Render canvas frame
     renderFrame(canvas, ctx, dpr);
 
-    // Frame watchdog: if frame time > 20ms for 30 consecutive frames, drop DPR to 1
-    const frameDuration = performance.now() - frameStart;
-    if (frameDuration > 20) {
-      slowFrameCountRef.current++;
-      if (slowFrameCountRef.current > 30 && dprCapRef.current > 1.0) {
-        dprCapRef.current = 1.0;
-      }
-    } else {
-      slowFrameCountRef.current = Math.max(0, slowFrameCountRef.current - 1);
-    }
-
-    // Stop drawing entirely once hole covers viewport
-    if (p >= 0.98) {
-      // Park loop until user scrolls back up
+    // Stop drawing loop once aperture completely fills viewport
+    if (p >= 0.99) {
       rafRef.current = requestAnimationFrame(animate);
       return;
     }
@@ -340,7 +327,6 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     if (!ctx) return;
     ctxRef.current = ctx;
 
-    // Check prefers-reduced-motion
     reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const handleResize = () => {
@@ -352,25 +338,21 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       canvas.width = w;
       canvas.height = h;
 
-      const isDesktop = window.innerWidth >= 768;
-      isDesktopRef.current = isDesktop;
-
-      // ── Reference Formulas ──
-      // R0 = 0.05 * min(viewportWidth, viewportHeight)
+      // ── Calibrated Ring Radii & Typography ──
       const viewportMin = Math.min(rect.width, rect.height);
-      const R0 = 0.05 * viewportMin * dpr;
+      const R0 = 0.055 * viewportMin * dpr;
 
       const newRings: RingData[] = [];
       for (let k = 0; k < RING_COUNT; k++) {
-        // R(k) = R0 * 1.28^k
-        const radius = R0 * Math.pow(1.28, k);
-        // fs(R) = 9 + 0.045 * R px
+        // R(k) = R0 * 1.34^k
+        const radius = R0 * Math.pow(1.34, k);
         const cssRadius = radius / dpr;
-        const fontSize = (9 + 0.045 * cssRadius) * dpr;
-        // n = floor(2 * PI * R / (0.66 * fs))
-        const charCount = Math.floor((2 * Math.PI * radius) / (0.66 * fontSize));
-        // Alternate rings spin in opposite directions: speed = 0.06 / (1 + 0.12k) rad/s
-        const speed = (0.06 / (1 + 0.12 * k)) * (k % 2 === 0 ? 1 : -1);
+        // fs(R) = (8.5 + 0.040 * R_css) * dpr
+        const fontSize = (8.5 + 0.040 * cssRadius) * dpr;
+        // n = floor(2 * PI * R / (0.68 * fs))
+        const charCount = Math.floor((2 * Math.PI * radius) / (0.68 * fontSize));
+        // Alternate rings spin in opposite directions: speed = 0.048 / (1 + 0.12k) rad/s
+        const speed = (0.048 / (1 + 0.12 * k)) * (k % 2 === 0 ? 1 : -1);
 
         // Pre-generate random thresholds t in [0, 1] for 1.8s scattered fill-in
         const thresholds = new Float32Array(charCount);
@@ -388,13 +370,13 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       }
       ringsDataRef.current = newRings;
 
-      // Pre-render 22px pitch dot grid with 1px dots at 14% opacity onto offscreen canvas
+      // Pre-render 22px pitch dot grid onto offscreen canvas (1 blit call per frame)
       const offscreen = document.createElement('canvas');
       offscreen.width = w;
       offscreen.height = h;
       const offCtx = offscreen.getContext('2d');
       if (offCtx) {
-        offCtx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+        offCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
         const pitch = 22 * dpr;
         const dotRadius = 1 * dpr;
         for (let x = 0; x < w; x += pitch) {
@@ -469,19 +451,22 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   return (
     <div
       ref={pinWrapperRef}
-      className="relative w-full h-[380vh] bg-[#F7F9FF] select-none"
+      className="relative w-full h-[360vh] bg-[#07090E] select-none"
     >
       {/* Pinned Viewport Container */}
       <div
         ref={stickyContainerRef}
-        className="sticky top-0 w-full h-screen overflow-hidden bg-[#F7F9FF]"
+        className="sticky top-0 w-full h-screen overflow-hidden bg-[#07090E]"
       >
-        {/* ── UNDERLYING LAYER: Revealed through central aperture ── */}
-        <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center">
+        {/* ── UNDERLYING LAYER: Revealed ONLY through central aperture ── */}
+        <div
+          ref={titleScreenWrapperRef}
+          className="absolute inset-0 w-full h-full z-0 flex items-center justify-center pointer-events-none"
+        >
           <TitleScreen onScrollCueClick={handleScrollToHome} />
         </div>
 
-        {/* ── TOP LAYER: Dark Canvas with Concentric Spiral & Aperture ── */}
+        {/* ── CANVAS LAYER: Solid dark background with concentric rotating rings ── */}
         <div
           ref={canvasWrapperRef}
           className="absolute inset-0 w-full h-full z-10 transition-opacity duration-300"
@@ -491,115 +476,122 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
           onTouchStart={startHold}
           onTouchEnd={endHold}
         >
-          {/* Hardware Accelerated Canvas */}
           <canvas
             ref={canvasRef}
             className="w-full h-full block cursor-grab active:cursor-grabbing"
           />
+        </div>
 
-          {/* ── Split Screen Opening Hero Overlay (Desktop: Left, Mobile: Bottom Stack) ── */}
-          <div
-            ref={heroOverlayRef}
-            className="absolute inset-0 max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 flex flex-col justify-end md:justify-center pb-16 md:pb-0 pointer-events-none z-20"
-          >
-            <div className="max-w-xl text-white bg-black/40 md:bg-transparent p-6 md:p-0 rounded-2xl md:rounded-none backdrop-blur-md md:backdrop-blur-none border border-white/10 md:border-none shadow-2xl md:shadow-none">
-              {/* Overline Tag */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 font-mono text-[10px] sm:text-xs uppercase tracking-widest text-[#E7F0FF] mb-4 sm:mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#155EEF] animate-pulse" />
-                <span>ENTREPRENEURSHIP CELL · MIT AOE PUNE</span>
-              </div>
+        {/* ── TOP FLOATING HEADER PILL: Architectural Navigation & Marquee (Reference) ── */}
+        <div
+          ref={topNavRef}
+          className="absolute top-4 sm:top-6 inset-x-0 mx-auto w-fit max-w-[94vw] z-30 transition-opacity duration-300 pointer-events-auto select-none"
+        >
+          <div className="flex flex-col items-center bg-[#07090E]/85 hover:bg-[#07090E]/95 border border-white/15 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden transition-all">
+            {/* Upper Navigation Row */}
+            <div className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 border-b border-white/10 font-mono text-[10px] sm:text-xs text-white/80">
+              <a
+                href="#homepage-main"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleScrollToHome();
+                }}
+                className="flex items-center gap-2 pr-2 sm:pr-3 border-r border-white/15 text-white font-bold hover:text-[#155EEF] transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#155EEF]" />
+                <span>E-CELL</span>
+              </a>
+              <a href="#about" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors hidden xs:inline">
+                ABOUT
+              </a>
+              <a href="#all-events" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors">
+                EVENTS
+              </a>
+              <a href="#initiatives" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors hidden sm:inline">
+                INITIATIVES
+              </a>
+              <a href="/ventures" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors">
+                VENTURES
+              </a>
+              <a href="/team" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors hidden md:inline">
+                TEAM
+              </a>
+              <a href="/contact" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors">
+                CONTACT
+              </a>
+            </div>
 
-              {/* Main Headline */}
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight leading-[1.08] text-white mb-4 sm:mb-6">
-                Ideas don&apos;t build <br />
-                <span className="text-[#155EEF] italic font-serif">themselves.</span>
-              </h1>
-
-              {/* Editorial Subparagraph */}
-              <p className="text-xs sm:text-sm lg:text-base font-sans text-slate-300 leading-relaxed mb-6 sm:mb-8 max-w-lg">
-                The campus venture engine converting student curiosity into audited startups.
-                ₹25L pre-seed grants, rapid prototyping makerspaces, 100% reimbursed patent filings,
-                and direct access to Western India&apos;s sharpest builder cohort.
-              </p>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pointer-events-auto">
-                <button
-                  onClick={handleScrollToHome}
-                  type="button"
-                  className="inline-flex items-center gap-2 bg-[#155EEF] hover:bg-[#103B83] text-white px-5 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider font-semibold transition-all shadow-lg hover:shadow-xl active:scale-95 cursor-pointer"
-                >
-                  <span>Explore Ventures</span>
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-
-                <button
-                  onClick={handleScrollToHome}
-                  type="button"
-                  className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider font-semibold transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
-                >
-                  <Play className="w-3.5 h-3.5 fill-current" />
-                  <span>Watch Reel</span>
-                </button>
-              </div>
-
-              {/* Scroll Cue Indicator */}
-              <div className="mt-6 sm:mt-10 hidden sm:flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-slate-400">
-                <div className="w-2 h-2 rounded-full border border-slate-400 flex items-center justify-center animate-ping" />
-                <span>Scroll to dive into ecosystem</span>
-              </div>
+            {/* Lower Marquee Strip */}
+            <div className="w-full overflow-hidden py-1 px-4 bg-white/[0.03] text-[9px] font-mono tracking-wider text-[#94A3B8] whitespace-nowrap flex items-center justify-center gap-3">
+              <span className="inline-block animate-pulse w-1.5 h-1.5 rounded-full bg-[#155EEF]" />
+              <span>MIT AOE PUNE // CIIE // 2026 COHORT APPLICATIONS OPEN // ₹25L PRE-SEED GRANTS</span>
             </div>
           </div>
+        </div>
 
-          {/* ── Floating Interactive Center Pill ── */}
+        {/* ── CENTER INTERACTIVE PILL: CLICK & HOLD ── */}
+        <div
+          ref={pillRef}
+          className="absolute bottom-8 sm:bottom-12 inset-x-0 mx-auto w-fit z-30 transition-opacity duration-300 pointer-events-auto select-none"
+        >
           <div
-            ref={pillRef}
-            className="absolute bottom-6 right-6 sm:bottom-10 sm:right-12 z-30 transition-opacity duration-300 pointer-events-auto"
+            className="flex items-center gap-3 bg-black/85 hover:bg-black/95 text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-2xl transition-all cursor-pointer group active:scale-95"
+            onMouseDown={startHold}
+            onMouseUp={endHold}
+            onTouchStart={startHold}
+            onTouchEnd={endHold}
           >
-            <div
-              className="flex items-center gap-3 bg-black/85 hover:bg-black/95 text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-2xl transition-all cursor-pointer select-none group"
-              onMouseDown={startHold}
-              onMouseUp={endHold}
-              onTouchStart={startHold}
-              onTouchEnd={endHold}
-            >
-              {/* Circular SVG Progress Ring */}
-              <div className="relative w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center">
-                <svg className="w-6 h-6 sm:w-7 sm:h-7 -rotate-90" viewBox="0 0 40 40">
-                  <circle
-                    cx="20"
-                    cy="20"
-                    r="18"
-                    className="stroke-white/20"
-                    strokeWidth="2.5"
-                    fill="none"
-                  />
-                  <circle
-                    ref={progressRingRef}
-                    cx="20"
-                    cy="20"
-                    r="18"
-                    className="stroke-[#155EEF] transition-all duration-75"
-                    strokeWidth="2.5"
-                    strokeDasharray={2 * Math.PI * 18}
-                    strokeDashoffset={2 * Math.PI * 18}
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </svg>
-                <ArrowDown className="w-3 h-3 text-white absolute" />
-              </div>
+            {/* Circular SVG Progress Ring */}
+            <div className="relative w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center">
+              <svg className="w-6 h-6 sm:w-7 sm:h-7 -rotate-90" viewBox="0 0 40 40">
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="18"
+                  className="stroke-white/20"
+                  strokeWidth="2.5"
+                  fill="none"
+                />
+                <circle
+                  ref={progressRingRef}
+                  cx="20"
+                  cy="20"
+                  r="18"
+                  className="stroke-[#155EEF] transition-all duration-75"
+                  strokeWidth="2.5"
+                  strokeDasharray={2 * Math.PI * 18}
+                  strokeDashoffset={2 * Math.PI * 18}
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+              <ArrowDown className="w-3 h-3 text-white absolute" />
+            </div>
 
-              <div className="flex flex-col text-left">
-                <span className="font-mono text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-white">
-                  CLICK &amp; HOLD
-                </span>
-                <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-wider text-[#64748B]">
-                  OR SCROLL TO DIVE
-                </span>
-              </div>
+            <div className="flex flex-col text-left">
+              <span className="font-mono text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-white">
+                CLICK &amp; HOLD
+              </span>
+              <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-wider text-[#94A3B8]">
+                OR SCROLL TO DIVE
+              </span>
             </div>
           </div>
+        </div>
+
+        {/* ── BOTTOM RIGHT: LEARN MORE / EXPLORE ── */}
+        <div
+          ref={exploreBtnRef}
+          className="absolute bottom-6 right-6 sm:bottom-10 sm:right-10 z-30 transition-opacity duration-300 pointer-events-auto hidden sm:block select-none"
+        >
+          <button
+            onClick={handleScrollToHome}
+            type="button"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 hover:bg-white/10 text-white/80 hover:text-white border border-white/20 font-mono text-[10px] uppercase tracking-wider transition-all backdrop-blur-md cursor-pointer active:scale-95"
+          >
+            <span>LEARN MORE</span>
+            <ArrowDown className="w-3 h-3 text-[#155EEF]" />
+          </button>
         </div>
       </div>
     </div>

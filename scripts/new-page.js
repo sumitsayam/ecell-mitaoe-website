@@ -115,3 +115,4 @@ export default function ${capitalized}Page() {
 }
 
 console.log(`🎉 Page scaffolding complete for /${cleanName}!`);
+

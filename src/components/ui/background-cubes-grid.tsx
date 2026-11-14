@@ -894,3 +894,4 @@ export type BackgroundCubesGridProps = IsometricCubesProps | PerspectiveCubesPro
 
 export const BackgroundCubesGrid = (props: BackgroundCubesGridProps) =>
   props.variant === "perspective" ? <PerspectiveCubes {...props} /> : <IsometricCubes {...props} />;
+
