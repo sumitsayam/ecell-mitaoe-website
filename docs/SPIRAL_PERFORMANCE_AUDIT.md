@@ -77,3 +77,4 @@ The goal is to eliminate runtime lag, high CPU/GPU utilization, and memory press
 - [x] Confirm reversible scroll mechanics: GSAP ScrollTrigger timeline pins `pinWrapperRef` over 360vh with scrub.
 - [x] Check DPR capping: DPR capped at 1.5x.
 - [x] Next.js production build verification: Build and test under `next start` to isolate development tooling overhead.
+

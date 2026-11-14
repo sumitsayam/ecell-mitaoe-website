@@ -4,11 +4,22 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import TitleScreen from './TitleScreen';
 
 /* ────────────────────────────────────────────────────────────────────────
- *  SpiralIntroStage — High-Performance Concentric Typography Spiral
+ *  SpiralIntroStage — Theme-Adaptive Concentric Typography Spiral
  *
- *  Engineered for 60–120 FPS with minimal main-thread CPU and GPU footprint:
+ *  Engineered for 60–120 FPS with 100% Theme Differentiation:
+ *  • Light Mode ("Architectural Blueprint Edition"):
+ *    - Pristine paper canvas background (#F8FAFF)
+ *    - Blueprint dot grid in technical cobalt (rgba(21, 94, 239, 0.15))
+ *    - Kinetic rings in deep architectural navy (#102A56), electric blue (#155EEF),
+ *      and slate (#64748B)
+ *    - Cobalt glowing aperture rim
+ *  • Dark Mode ("Deep Space Cybernetics Edition"):
+ *    - Deep obsidian canvas background (#07090E)
+ *    - Luminous dot grid (rgba(255, 255, 255, 0.14))
+ *    - Kinetic rings in crisp white, electric blue (#60A5FA), neon cyan (#38BDF8)
+ *    - Luminous white glowing aperture rim
  *  • Responsive Ring Profiles:
- *    - Desktop (>= 1200px): 11–12 calibrated rings
+ *    - Desktop (>= 1200px): 12 calibrated rings
  *    - Standard / Laptop (768px – 1199px): 8 rings
  *    - Mobile (< 768px): 6 rings
  *    - Reduced motion: 4 rings
@@ -17,7 +28,6 @@ import TitleScreen from './TitleScreen';
  *  • Strict animation lifecycle: loop cancels completely when offscreen or hidden
  *  • Device Pixel Ratio capped at 1.5x with smart resize caching
  *  • Fully reversible GSAP ScrollTrigger timeline (downward and upward scrub)
- *  • Zero React re-renders: all high-frequency physics maintained in refs
  * ────────────────────────────────────────────────────────────────────── */
 
 const SCRAMBLE_GLYPHS = '0123456789ABCDEF$#@%&*+=?~^/\\<>[]{}|;:';
@@ -68,6 +78,10 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   // UI DOM Refs
   const pillRef = useRef<HTMLDivElement>(null);
 
+  // Theme tracking refs
+  const isDarkModeRef = useRef<boolean>(true);
+  const bgColorRef = useRef<string>('#07090E');
+
   // Rings dynamic data
   const ringsDataRef = useRef<RingData[]>([]);
   const anglesRef = useRef<Float64Array>(new Float64Array(0));
@@ -107,19 +121,51 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     }
   }, [onEnterHome]);
 
+  // Generate theme-aware dot pattern tile
+  const generateDotPattern = useCallback((isDark: boolean) => {
+    const canvas = canvasRef.current;
+    const ctx = ctxRef.current;
+    if (!canvas || !ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, dprCapRef.current);
+    const patternCanvas = document.createElement('canvas');
+    const pitch = Math.round(22 * dpr);
+    patternCanvas.width = pitch;
+    patternCanvas.height = pitch;
+    const pCtx = patternCanvas.getContext('2d');
+    if (pCtx) {
+      pCtx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(21, 94, 239, 0.15)';
+      pCtx.beginPath();
+      pCtx.arc(pitch / 2, pitch / 2, Math.max(1, 1 * dpr), 0, Math.PI * 2);
+      pCtx.fill();
+      dotPatternRef.current = ctx.createPattern(patternCanvas, 'repeat');
+    }
+  }, []);
+
+  // Update theme state dynamically
+  const updateThemeState = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const theme = document.documentElement.getAttribute('data-theme');
+    const isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    isDarkModeRef.current = isDark;
+    bgColorRef.current = isDark ? '#07090E' : '#F8FAFF';
+    generateDotPattern(isDark);
+  }, [generateDotPattern]);
+
   // ── Render Single Frame (Optimized 60–120 FPS Target) ──
   const renderFrame = useCallback((canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, dpr: number, timestamp: number) => {
     const w = canvas.width;
     const h = canvas.height;
     const p = currentProgressRef.current;
     const mouse = mousePosRef.current;
+    const isDark = isDarkModeRef.current;
 
     // Rings are dead center in viewport
     const cx = w / 2;
     const cy = h / 2;
 
-    // 1. Draw solid dark background
-    ctx.fillStyle = '#07090E';
+    // 1. Draw theme-aware solid background
+    ctx.fillStyle = bgColorRef.current;
     ctx.fillRect(0, 0, w, h);
 
     // 2. Hardware-accelerated dot pattern fill (0 offscreen canvas-to-canvas blits)
@@ -180,22 +226,41 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       }
       if (baseAlpha <= 0.02) continue;
 
-      // Color palette per ring
+      // Color palette per ring: Completely differentiated between Dark and Light mode
       let defaultFill: string;
-      switch (ring.colorType) {
-        case 'blue':
-          defaultFill = `rgba(96, 165, 250, ${baseAlpha * 1.05})`; // Electric Blue (#60A5FA)
-          break;
-        case 'cyan':
-          defaultFill = `rgba(56, 189, 248, ${baseAlpha * 1.10})`; // Luminous Cyan (#38BDF8)
-          break;
-        case 'muted':
-          defaultFill = `rgba(148, 163, 184, ${baseAlpha * 0.75})`; // Technical Slate (#94A3B8)
-          break;
-        case 'white':
-        default:
-          defaultFill = `rgba(255, 255, 255, ${baseAlpha})`;
-          break;
+      if (isDark) {
+        switch (ring.colorType) {
+          case 'blue':
+            defaultFill = `rgba(96, 165, 250, ${baseAlpha * 1.05})`; // Electric Blue (#60A5FA)
+            break;
+          case 'cyan':
+            defaultFill = `rgba(56, 189, 248, ${baseAlpha * 1.10})`; // Luminous Cyan (#38BDF8)
+            break;
+          case 'muted':
+            defaultFill = `rgba(148, 163, 184, ${baseAlpha * 0.75})`; // Technical Slate (#94A3B8)
+            break;
+          case 'white':
+          default:
+            defaultFill = `rgba(255, 255, 255, ${baseAlpha})`; // Pure White
+            break;
+        }
+      } else {
+        // Light Mode: Architectural Blueprint Typography
+        switch (ring.colorType) {
+          case 'blue':
+            defaultFill = `rgba(21, 94, 239, ${baseAlpha * 1.05})`; // MITAOE Primary Electric Blue (#155EEF)
+            break;
+          case 'cyan':
+            defaultFill = `rgba(2, 132, 199, ${baseAlpha * 1.10})`; // Deep Cobalt (#0284C7)
+            break;
+          case 'muted':
+            defaultFill = `rgba(100, 116, 139, ${baseAlpha * 0.85})`; // Architectural Slate (#64748B)
+            break;
+          case 'white':
+          default:
+            defaultFill = `rgba(16, 42, 86, ${baseAlpha})`; // Deep Architectural Navy (#102A56)
+            break;
+        }
       }
 
       // Rounded font size for fast font metric cache hit
@@ -232,7 +297,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
 
         const originalChar = phrase[i % phraseLen];
 
-        // ── Cursor Hover Interaction: Matrix Character Shift & Cyan Glow ──
+        // ── Cursor Hover Interaction: Matrix Character Shift & Theme Accent Glow ──
         let charToDraw = originalChar;
         let charFill = defaultFill;
 
@@ -248,7 +313,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
             // Character Shift
             const scrambleIdx = Math.floor(timestamp * 0.035 + i * 11 + k * 17) % SCRAMBLE_GLYPHS.length;
             charToDraw = SCRAMBLE_GLYPHS[scrambleIdx];
-            charFill = '#38BDF8';
+            charFill = isDark ? '#38BDF8' : '#155EEF';
 
             // Micro repulsion push away from cursor
             const push = proximity * 5 * dpr;
@@ -260,7 +325,9 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
 
         // Bullet dot highlight
         if (charToDraw === '·') {
-          charFill = `rgba(56, 189, 248, ${Math.min(1, baseAlpha * 1.3)})`;
+          charFill = isDark
+            ? `rgba(56, 189, 248, ${Math.min(1, baseAlpha * 1.3)})`
+            : `rgba(21, 94, 239, ${Math.min(1, baseAlpha * 1.3)})`;
         }
 
         // Rotation: theta - PI/2 (tops point inward toward center)
@@ -289,7 +356,10 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       // Sharp glowing circular boundary
       ctx.beginPath();
       ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, 0.75 - (p - 0.18) * 0.85)})`;
+      const strokeAlpha = Math.max(0, 0.75 - (p - 0.18) * 0.85);
+      ctx.strokeStyle = isDark
+        ? `rgba(255, 255, 255, ${strokeAlpha})`
+        : `rgba(21, 94, 239, ${strokeAlpha})`;
       ctx.lineWidth = 1.6 * dpr;
       ctx.stroke();
     }
@@ -388,7 +458,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     }
   }, []);
 
-  // ── Setup Canvas & Responsive Ring Profile ──
+  // ── Setup Canvas, Theme Observer & Responsive Ring Profile ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -399,6 +469,19 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
 
     isActiveRef.current = true;
     reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Initialize Theme State
+    updateThemeState();
+
+    // Listen to theme changes on <html>
+    const themeObserver = new MutationObserver(() => {
+      updateThemeState();
+      startLoop();
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'class'],
+    });
 
     const handleResize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, dprCapRef.current);
@@ -415,19 +498,8 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       canvas.width = w;
       canvas.height = h;
 
-      // Pre-compile 22px hardware dot pattern tile once on resize
-      const patternCanvas = document.createElement('canvas');
-      const pitch = Math.round(22 * dpr);
-      patternCanvas.width = pitch;
-      patternCanvas.height = pitch;
-      const pCtx = patternCanvas.getContext('2d');
-      if (pCtx) {
-        pCtx.fillStyle = 'rgba(255, 255, 255, 0.14)';
-        pCtx.beginPath();
-        pCtx.arc(pitch / 2, pitch / 2, Math.max(1, 1 * dpr), 0, Math.PI * 2);
-        pCtx.fill();
-        dotPatternRef.current = ctx.createPattern(patternCanvas, 'repeat');
-      }
+      // Re-generate dot pattern on resize
+      generateDotPattern(isDarkModeRef.current);
 
       // Responsive Ring Count Selection:
       // Desktop: 12 rings | Standard / Laptop: 8 rings | Mobile: 6 rings | Reduced Motion: 4 rings
@@ -550,9 +622,10 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       observer.disconnect();
+      themeObserver.disconnect();
       if (scrollTriggerInstance) scrollTriggerInstance.kill();
     };
-  }, [animate, startLoop, stopLoop]);
+  }, [animate, startLoop, stopLoop, updateThemeState, generateDotPattern]);
 
   // ── Holding Interaction ──
   const startHold = () => {
@@ -583,12 +656,12 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   return (
     <div
       ref={pinWrapperRef}
-      className="relative w-full h-[360vh] bg-[#07090E] select-none"
+      className="relative w-full h-[360vh] bg-[var(--bg)] select-none transition-colors duration-300"
     >
       {/* Pinned Viewport Container */}
       <div
         ref={stickyContainerRef}
-        className="sticky top-0 w-full h-screen overflow-hidden bg-[#07090E]"
+        className="sticky top-0 w-full h-screen overflow-hidden bg-[var(--bg)] transition-colors duration-300"
       >
         {/* ── UNDERLYING LAYER: Revealed ONLY through central aperture ── */}
         <div
@@ -627,7 +700,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
             onTouchStart={startHold}
             onTouchEnd={endHold}
             type="button"
-            className="bg-white/90 hover:bg-white active:scale-95 text-black font-mono font-medium text-xs tracking-wider px-5 py-2 rounded-full shadow-lg uppercase transition-all cursor-pointer border border-white/20"
+            className="bg-[var(--color-surface)] hover:bg-[var(--color-surface)]/90 active:scale-95 text-[var(--ink)] font-mono font-medium text-xs tracking-wider px-5 py-2 rounded-full shadow-lg uppercase transition-all cursor-pointer border border-[var(--line)]"
           >
             Hold or scroll to explore ↓
           </button>

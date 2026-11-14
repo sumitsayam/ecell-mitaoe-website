@@ -5,32 +5,24 @@
 @tailwind utilities;
 
 :root, :root[data-theme="light"] {
-  /* ── Core Editorial Theme Tokens ── */
-  --bg: #f6f7fa;
-  --ink: #14224a;
-  --accent: #2b5ce6;
-  --line: rgba(20, 34, 74, 0.08);
+  /* ── Core Editorial Theme Tokens (Architectural Blueprint Light Mode) ── */
+  --bg: #F8FAFF;
+  --ink: #102A56;
+  --accent: #155EEF;
+  --line: rgba(16, 42, 86, 0.08);
   --cell: 32px;
 
   /* ── Core Editorial Design System Tokens ── */
   --color-background: var(--bg);
   --color-surface: #FFFFFF;
   --color-foreground: var(--ink);
-  --color-body: #26344D;
+  --color-body: #102A56;
   --color-primary: var(--accent);
   --color-primary-dark: #0B347C;
   --color-primary-soft: #E7F0FF;
   --color-accent-yellow: #FFB52E;
   --color-muted: #64748B;
   --color-border: #DCE5F2;
-
-  /* ── Dark Surfaces (Spiral & Storytelling Stages) ── */
-  --color-dark: #07090E;
-  --color-dark-surface: #0F1420;
-  --color-dark-text: #F5F8FF;
-
-  /* ── Architectural Blueprint Grid ── */
-  --grid-color: var(--line);
 
   /* ── Typography Scale ── */
   --font-display: 'Space Grotesk', 'Sora', system-ui, -apple-system, sans-serif;
@@ -47,24 +39,26 @@
 }
 
 [data-theme="dark"] {
-  --bg: #0b0c10;
-  --ink: #eef0f5;
-  --accent: #5b86ff;
-  --line: rgba(238, 240, 245, 0.08);
+  /* ── Core Cybernetics Theme Tokens (Deep Space Obsidian Dark Mode) ── */
+  --bg: #07090E;
+  --ink: #F5F8FF;
+  --accent: #5B86FF;
+  --line: rgba(245, 248, 255, 0.08);
+  --cell: 32px;
 
   --color-background: var(--bg);
-  --color-surface: #10141e;
+  --color-surface: #10141E;
   --color-foreground: var(--ink);
-  --color-body: #c7d2e5;
+  --color-body: #C7D2E5;
   --color-primary: var(--accent);
-  --color-primary-soft: #14224a;
-  --color-border: rgba(238, 240, 245, 0.12);
+  --color-primary-soft: #14224A;
+  --color-border: rgba(245, 248, 255, 0.12);
   --color-muted: #94A3B8;
 
   --background: var(--bg);
   --foreground: var(--ink);
   --primary: var(--accent);
-  --border: rgba(238, 240, 245, 0.12);
+  --border: rgba(245, 248, 255, 0.12);
 }
 
 @media (max-width: 640px) {
@@ -101,62 +95,14 @@
     font-family: var(--font-display);
   }
 
+  code, pre, .font-code {
+    font-family: var(--font-mono);
+  }
+
   ::selection {
     background-color: var(--color-primary);
     color: #FFFFFF;
   }
-}
-
-/* ── Outlined / Stroke Text ── */
-.stroke-text {
-  color: transparent;
-  -webkit-text-stroke: 2px var(--color-primary);
-  text-stroke: 2px var(--color-primary);
-}
-
-@media (min-width: 768px) {
-  .stroke-text {
-    -webkit-text-stroke: 2.5px var(--color-primary);
-    text-stroke: 2.5px var(--color-primary);
-  }
-}
-
-.stroke-text-white {
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.7);
-  text-stroke: 1.5px rgba(255, 255, 255, 0.7);
-}
-
-/* ── Grid & Architectural Blueprint Patterns ── */
-.bg-grid {
-  background-size: 36px 36px;
-  background-image: 
-    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
-}
-
-.bg-grid-subtle {
-  background-size: 18px 18px;
-  background-image: 
-    linear-gradient(to right, rgba(21, 94, 239, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(21, 94, 239, 0.05) 1px, transparent 1px);
-}
-
-.bg-grid-dark {
-  background-size: 36px 36px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-}
-
-.bg-dot-grid {
-  background-image: radial-gradient(circle, var(--color-primary) 0.8px, transparent 0.8px);
-  background-size: 20px 20px;
-}
-
-.bg-dot-grid-dark {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
 }
 
 /* ── Custom Scrollbar ── */
@@ -197,12 +143,6 @@ html.lenis, html.lenis body {
 
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
-}
-
-/* ── Radial mask for spiral reveal ── */
-.mask-radial-hole {
-  mask-image: radial-gradient(circle at 50% 50%, transparent var(--hole-radius, 0px), black calc(var(--hole-radius, 0px) + 2px));
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent var(--hole-radius, 0px), black calc(var(--hole-radius, 0px) + 2px));
 }
 
 /* ── Reduced motion compliance ── */
