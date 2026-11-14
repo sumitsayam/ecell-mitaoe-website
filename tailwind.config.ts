@@ -9,80 +9,114 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Design system official tokens
-        canvas: '#FAF8F2',
-        primary: {
-          DEFAULT: '#092957',
-          deep: '#061B36',
-          secondary: '#244B7A',
+        background: {
+          DEFAULT: '#F8FAFF',
+          soft: '#E7F0FF',
+          surface: '#FFFFFF',
+          dark: '#0B1020',
+          'dark-surface': '#121C32',
         },
-        body: '#253247',
-        muted: '#687386',
-        borderToken: '#E2E5E9',
         surface: {
-          pale: '#EDF2F8',
+          DEFAULT: '#FFFFFF',
+          pale: '#F8FAFF',
+          soft: '#E7F0FF',
+          dark: '#0B1020',
+          darkSurface: '#121C32',
           white: '#FFFFFF',
         },
-
-        // Color aliases for backward compatibility & rich shades
-        cream: {
-          50: '#FDFCF7',
-          100: '#FAF8F2', // Updated to exact token
-          150: '#F4F1E6',
-          200: '#EAE5D8',
-          300: '#DCD4C2',
-          400: '#C5BAA4',
-          500: '#A99D85',
+        foreground: {
+          DEFAULT: '#101B32',
+          dark: '#F5F8FF',
         },
-        navy: {
-          50: '#EDF2F8',
-          100: '#DCE6F2',
-          200: '#B8CDE5',
-          700: '#244B7A', // Secondary blue token
-          800: '#143865',
-          850: '#092957', // Primary navy token
-          900: '#061B36', // Deep navy token
-          950: '#041224',
+        primary: {
+          DEFAULT: '#155EEF',
+          dark: '#0B347C',
+          soft: '#E7F0FF',
+          50: '#F0F6FF',
+          100: '#E7F0FF',
+          200: '#C2D9FF',
+          600: '#155EEF',
+          700: '#0B347C',
+          800: '#082559',
+          900: '#05183B',
+          deep: '#0B347C',
         },
-        ink: {
-          DEFAULT: '#253247', // Body text token
-          light: '#3C4B62',
-          muted: '#687386', // Muted text token
-        }
+        muted: {
+          DEFAULT: '#6B7890',
+          light: '#94A3B8',
+          dark: '#475569',
+        },
+        borderToken: {
+          DEFAULT: '#DCE5F2',
+          subtle: '#E2E8F0',
+          dark: '#1E293B',
+        },
+        border: {
+          DEFAULT: '#DCE5F2',
+          subtle: '#E2E8F0',
+          dark: '#1E293B',
+        },
+        dark: {
+          DEFAULT: '#0B1020',
+          surface: '#121C32',
+          text: '#F5F8FF',
+        },
+        // Legacy backward compatibility
+        body: {
+          DEFAULT: '#101B32',
+          muted: '#6B7890',
+          light: '#94A3B8',
+        },
+        canvas: {
+          DEFAULT: '#F8FAFF',
+          paper: '#FFFFFF',
+          dark: '#0B1020',
+        },
+        accent: {
+          blue: '#155EEF',
+          orange: '#EE7747',
+          yellow: '#F2C95C',
+          sky: '#E7F0FF',
+        },
       },
       maxWidth: {
-        'site': '1440px',
+        site: '1440px',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         display: ['var(--font-display)', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-serif)', 'Georgia', 'serif'],
         mono: ['var(--font-mono)', 'monospace'],
       },
       boxShadow: {
-        'soft-card': '0 2px 12px -2px rgba(9, 41, 87, 0.05), 0 1px 3px 0 rgba(9, 41, 87, 0.03)',
-        'elevated': '0 10px 28px -4px rgba(9, 41, 87, 0.08), 0 3px 8px -2px rgba(9, 41, 87, 0.04)',
+        'soft-card': '0 2px 14px -2px rgba(21, 94, 239, 0.06), 0 1px 3px 0 rgba(21, 94, 239, 0.03)',
+        elevated: '0 12px 32px -4px rgba(21, 94, 239, 0.1), 0 4px 10px -2px rgba(21, 94, 239, 0.04)',
+        paper: '0 4px 20px -2px rgba(16, 27, 50, 0.06), 0 1px 3px rgba(16, 27, 50, 0.04)',
+        'dark-glow': '0 0 35px -5px rgba(21, 94, 239, 0.25)',
       },
       borderRadius: {
-        'card': '16px',
+        card: '16px',
         'card-lg': '20px',
-        '2xl': '1rem',
-        '3xl': '1.5rem',
+        pill: '9999px',
       },
       keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-5px)' },
+          '50%': { transform: 'translateY(-6px)' },
         },
-        fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(6px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        }
+        pulseGlow: {
+          '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+          '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+        },
       },
       animation: {
+        marquee: 'marquee 25s linear infinite',
         float: 'float 5s ease-in-out infinite',
-        fadeIn: 'fadeIn 0.35s ease-out forwards',
-      }
+        'pulse-glow': 'pulseGlow 4s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

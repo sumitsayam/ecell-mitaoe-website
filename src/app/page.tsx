@@ -1,16 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
+import SpiralIntroStage from '@/components/intro/SpiralIntroStage';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import StatsBar from '@/components/StatsBar';
+import LedgerSection from '@/components/sections/LedgerSection';
+import FeaturesGrid from '@/components/sections/FeaturesGrid';
+import EcosystemExplorer from '@/components/explorer/EcosystemExplorer';
 import FeaturedEvents from '@/components/FeaturedEvents';
 import UpcomingEventsGrid from '@/components/UpcomingEventsGrid';
 import InitiativesSection from '@/components/InitiativesSection';
 import AboutSection from '@/components/AboutSection';
 import TeamPreviewSection from '@/components/TeamPreviewSection';
 import AchievementsSection from '@/components/AchievementsSection';
+import StartupToolkit from '@/components/sections/StartupToolkit';
+import StatsBar from '@/components/StatsBar';
 import JoinCtaSection from '@/components/JoinCtaSection';
+import FinalSpiralSection from '@/components/sections/FinalSpiralSection';
 import Footer from '@/components/Footer';
 import EventModal from '@/components/EventModal';
 import JoinModal from '@/components/JoinModal';
@@ -30,52 +36,76 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-screen bg-canvas flex flex-col relative selection:bg-primary selection:text-white">
-      {/* A. Header */}
-      <Navbar
-        onOpenSearch={() => setIsSearchOpen(true)}
-        onOpenJoin={() => setIsJoinOpen(true)}
-      />
+    <main className="min-h-screen bg-white text-[#102A56] flex flex-col relative selection:bg-[#155EEF] selection:text-white">
+      {/* ── STAGES 01, 02, 03: The Concentric Spiral → Aperture Zoom → Title Screen ── */}
+      <SpiralIntroStage onEnterHome={() => scrollToSection('homepage-main')} />
 
-      {/* B. Hero Section */}
-      <HeroSection
-        onExploreEvents={() => scrollToSection('events')}
-        onDiscoverECell={() => scrollToSection('about')}
-      />
+      {/* ── STAGE 04: Main Website (Continuous scroll transition) ── */}
+      <div id="homepage-main" className="relative w-full bg-white">
+        {/* Architectural Sticky Navigation Pill */}
+        <Navbar
+          onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenJoin={() => setIsJoinOpen(true)}
+        />
 
-      {/* C. Impact Statistics (4 verified metrics) */}
-      <StatsBar />
+        {/* Editorial Hero Stage */}
+        <HeroSection
+          onExploreEvents={() => scrollToSection('all-events')}
+          onDiscoverECell={() => scrollToSection('about')}
+          onSelectEvent={(event) => setSelectedEvent(event)}
+        />
 
-      {/* D. Featured Events (Brand Battle, Workshop, Showcase) */}
-      <FeaturedEvents
-        onSelectEvent={(event) => setSelectedEvent(event)}
-        onViewAllEvents={() => scrollToSection('all-events')}
-      />
+        {/* Verified Metrics Strip */}
+        <StatsBar />
 
-      {/* E. Upcoming Events Grid with filters, search, and states */}
-      <div id="all-events">
-        <UpcomingEventsGrid />
+        {/* The Entrepreneurship Ledger (Venture Timeline Compressor) */}
+        <LedgerSection />
+
+        {/* Ten Numbered Capabilities (001–010 Editorial Index) */}
+        <FeaturesGrid />
+
+        {/* Interactive E-Cell Ecosystem Explorer (Simulated File Tree) */}
+        <EcosystemExplorer />
+
+        {/* Featured Signature Events Deck */}
+        <FeaturedEvents
+          onSelectEvent={(event) => setSelectedEvent(event)}
+          onViewAllEvents={() => scrollToSection('all-events')}
+        />
+
+        {/* Comprehensive Event Directory with Search and Status Filter */}
+        <div id="all-events">
+          <UpcomingEventsGrid />
+        </div>
+
+        {/* What is E-Cell / 4 Strategic Pillars */}
+        <div id="about">
+          <AboutSection />
+        </div>
+
+        {/* Key Student Initiatives */}
+        <InitiativesSection />
+
+        {/* Meet the Team (Leadership, Faculty & Department Filters) */}
+        <TeamPreviewSection />
+
+        {/* Wall of Fame & Milestones Timeline */}
+        <AchievementsSection />
+
+        {/* Startup Toolkit (Free Founder Resources & Downloadable Templates) */}
+        <StartupToolkit />
+
+        {/* Final Recruitment Statement CTA */}
+        <JoinCtaSection onOpenJoin={() => setIsJoinOpen(true)} />
+
+        {/* 11. The Final Spiral (Returning Visual Signature) */}
+        <FinalSpiralSection onOpenJoin={() => setIsJoinOpen(true)} />
+
+        {/* Architectural Footer */}
+        <Footer />
       </div>
 
-      {/* F. Initiatives */}
-      <InitiativesSection onOpenJoin={() => setIsJoinOpen(true)} />
-
-      {/* G. About E-Cell */}
-      <AboutSection />
-
-      {/* H. Team Preview */}
-      <TeamPreviewSection />
-
-      {/* I. Achievements & Archive Preview */}
-      <AchievementsSection />
-
-      {/* J. Recruitment CTA */}
-      <JoinCtaSection onOpenJoin={() => setIsJoinOpen(true)} />
-
-      {/* K. Footer */}
-      <Footer />
-
-      {/* Interactive Modals */}
+      {/* Global Modals & Dialogs */}
       <EventModal
         event={selectedEvent}
         onClose={() => setSelectedEvent(null)}

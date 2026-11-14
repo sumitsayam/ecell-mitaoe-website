@@ -113,13 +113,19 @@ export default function InitiativesPage() {
                       <span>{item.whoIsItFor}</span>
                     </div>
 
-                    <div className="pt-2">
+                    <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                      <Link
+                        href={`/initiatives/${item.slug}`}
+                        className="flex-1 inline-flex items-center justify-center gap-2 bg-[#F4F8FF] hover:bg-[#EAF2FF] text-[#155EEF] border border-[#D9E5F5] py-2.5 rounded-xl text-xs font-mono uppercase font-bold tracking-wider transition-all"
+                      >
+                        <span>Full Details</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
                       <Link
                         href="/join"
-                        className="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-deep text-white py-2.5 rounded-xl text-xs font-bold transition-all shadow-2xs"
+                        className="flex-1 inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-deep text-white py-2.5 rounded-xl text-xs font-mono uppercase font-bold tracking-wider transition-all shadow-2xs"
                       >
-                        <span>Apply / Register Interest</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
+                        <span>Apply / Register</span>
                       </Link>
                     </div>
                   </div>

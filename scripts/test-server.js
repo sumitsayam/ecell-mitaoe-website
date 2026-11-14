@@ -1,14 +1,18 @@
 const http = require('http');
 
 const routesToTest = [
-  { path: '/', title: 'Home', check: 'IDEAS' },
+  { path: '/', title: 'Home', check: 'MITAOE' },
   { path: '/about', title: 'About', check: 'Mission' },
   { path: '/initiatives', title: 'Initiatives', check: 'Incubation' },
+  { path: '/initiatives/incubation-studio', title: 'Initiative Detail', check: 'Venture Incubation Studio' },
   { path: '/events', title: 'Events Directory', check: 'Events' },
   { path: '/events/brand-battle', title: 'Event Detail', check: 'Brand Battle' },
   { path: '/team', title: 'Our Team', check: 'Leadership' },
   { path: '/achievements', title: 'Achievements', check: 'Milestones' },
   { path: '/resources', title: 'Resources', check: 'Playbook' },
+  { path: '/insights', title: 'Insights', check: 'Playbooks' },
+  { path: '/insights/dorm-to-seed-journey', title: 'Insight Detail', check: 'Seed Round' },
+  { path: '/contact', title: 'Contact', check: 'Coordinates' },
   { path: '/join', title: 'Join Recruitment', check: 'Recruitment' },
   { path: '/admin', title: 'Admin Overview', check: 'Overview' },
   { path: '/admin/login', title: 'Admin Login', check: 'Portal' },
@@ -40,11 +44,11 @@ async function testRoute(route) {
 }
 
 async function runAll() {
-  console.log('Testing all public and management portal routes...');
+  console.log('Testing all 22 public and management portal routes on Next.js production build...');
   for (const r of routesToTest) {
     await testRoute(r);
   }
-  console.log('ALL ROUTES TESTED SUCCESSFULLY!');
+  console.log('🎉 ALL 22 ROUTES RETURN HTTP 200 AND VALIDATED PAYLOADS!');
 }
 
 runAll().catch((err) => {
