@@ -36,6 +36,7 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
     { name: 'Team', href: '/team' },
     { name: 'Wall of Fame', href: '/achievements' },
     { name: 'Toolkit', href: '/resources' },
+    { name: 'Blogs', href: '/insights' },
     { name: 'Contact', href: '/contact' },
   ];
 
@@ -49,7 +50,7 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Brand Mark */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
-          <div className="w-9 h-9 rounded-lg bg-[var(--accent)] text-white flex items-center justify-center font-mono font-bold text-sm tracking-tight shadow-sm group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 rounded-lg bg-[#FFB52E] text-[#0A0D14] flex items-center justify-center font-mono font-extrabold text-sm tracking-tight shadow-sm group-hover:scale-105 transition-transform">
             EC
           </div>
           <div className="flex flex-col">
@@ -62,18 +63,18 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
           </div>
         </Link>
 
-        {/* Center Floating Editorial Pill (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-1 bg-[var(--color-surface)]/90 backdrop-blur-md border border-[var(--color-border)] shadow-soft-card px-3 py-1.5 rounded-full">
+        {/* Center Floating Editorial Pill (Desktop) — Signature Club Toggle Capsule */}
+        <nav className="hidden lg:flex items-center gap-1 bg-[#121620]/95 backdrop-blur-md border border-white/10 shadow-elevated px-2 py-1.5 rounded-full select-none">
           {navLinks.map((link) => {
             const active = isActive(link.href);
             return (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider transition-all ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                   active
-                    ? 'bg-[var(--accent)] text-white font-semibold shadow-xs'
-                    : 'text-[var(--ink)] hover:text-[var(--accent)] hover:bg-[var(--color-surface-hover)] font-medium'
+                    ? 'bg-[#FFB52E] text-[#0A0D14] font-extrabold shadow-sm'
+                    : 'text-[#C6CAD0] hover:text-white hover:bg-white/10 font-semibold'
                 }`}
               >
                 {link.name}
@@ -117,7 +118,7 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
             className="inline-flex items-center gap-2 bg-[var(--accent)] hover:opacity-90 active:scale-95 text-white px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer ml-1"
           >
             <span>Join E-Cell</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FFB52E] animate-pulse" />
           </button>
         </div>
 
@@ -147,7 +148,7 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden mt-3 max-w-7xl mx-auto p-4 bg-[var(--color-surface)]/95 backdrop-blur-lg border border-[var(--color-border)] rounded-2xl shadow-elevated animate-in fade-in slide-in-from-top-2">
+        <div className="lg:hidden mt-3 max-w-7xl mx-auto p-4 bg-[#121620]/95 backdrop-blur-lg border border-white/10 rounded-2xl shadow-elevated animate-in fade-in slide-in-from-top-2">
           <div className="flex flex-col gap-1.5">
             {navLinks.map((link) => {
               const active = isActive(link.href);
@@ -156,14 +157,14 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-3 py-2.5 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-between transition-colors ${
+                  className={`px-4 py-2.5 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-between transition-colors ${
                     active
-                      ? 'bg-[var(--accent)] text-white font-semibold'
-                      : 'text-[var(--ink)] hover:bg-[var(--color-surface-hover)]'
+                      ? 'bg-[#FFB52E] text-[#0A0D14] font-extrabold shadow-xs'
+                      : 'text-[#C6CAD0] hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <span>{link.name}</span>
-                  <ArrowRight className="w-3.5 h-3.5 opacity-60" />
+                  <ArrowRight className={`w-3.5 h-3.5 ${active ? 'text-[#0A0D14]' : 'opacity-60'}`} />
                 </Link>
               );
             })}
@@ -171,9 +172,9 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
             <Link
               href="/admin"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-xl font-mono text-xs uppercase tracking-wider text-[var(--color-muted)] hover:bg-[var(--color-surface-hover)] flex items-center gap-2"
+              className="px-4 py-2 rounded-xl font-mono text-xs uppercase tracking-wider text-[#94A3B8] hover:bg-white/10 flex items-center gap-2"
             >
-              <Shield className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <Shield className="w-3.5 h-3.5 text-[#FFB52E]" />
               <span>Portal Access (/admin)</span>
             </Link>
 
@@ -183,7 +184,7 @@ export default function Navbar({ onOpenSearch, onOpenJoin }: NavbarProps) {
                   setMobileMenuOpen(false);
                   if (onOpenJoin) onOpenJoin();
                 }}
-                className="w-full py-3 rounded-full bg-[var(--accent)] text-white font-mono text-xs uppercase tracking-wider font-semibold shadow-sm flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-full bg-[#FFB52E] text-[#0A0D14] font-mono text-xs uppercase tracking-wider font-bold shadow-sm flex items-center justify-center gap-2"
               >
                 <span>Join E-Cell MIT AOE</span>
                 <ArrowRight className="w-4 h-4" />

@@ -40,16 +40,16 @@ export default function AchievementsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Left Timeline */}
             <div className="lg:col-span-8">
-              {/* Year Filter Buttons */}
-              <div className="flex items-center gap-2 mb-8 p-1.5 bg-[var(--color-surface)] rounded-full border border-[var(--color-border)] w-fit shadow-2xs">
+              {/* Year Filter Buttons — Signature Club Capsule Toggles */}
+              <div className="flex items-center gap-1 mb-8 p-1.5 bg-[#121620] border border-white/10 rounded-full w-fit shadow-xs">
                 {['ALL', '2026', '2025', '2024'].map((yr) => (
                   <button
                     key={yr}
                     onClick={() => setFilterYear(yr)}
-                    className={`px-3.5 py-1 rounded-full text-xs font-mono uppercase font-bold transition-all cursor-pointer ${
+                    className={`px-4 py-1.5 rounded-full text-xs font-mono uppercase font-bold transition-all cursor-pointer ${
                       filterYear === yr
-                        ? 'bg-[var(--accent)] text-white shadow-2xs'
-                        : 'text-[var(--color-muted)] hover:text-[var(--accent)]'
+                        ? 'bg-[#FFB52E] text-[#0A0D14] font-extrabold shadow-sm'
+                        : 'text-[#C6CAD0] hover:text-white hover:bg-white/10'
                     }`}
                   >
                     {yr}

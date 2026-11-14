@@ -47,21 +47,23 @@ export default function TeamPreviewSection() {
           </Link>
         </div>
 
-        {/* Department Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-2 pb-8 border-b border-[var(--line)] mb-8">
-          {departments.map((dept) => (
-            <button
-              key={dept}
-              onClick={() => setActiveDept(dept)}
-              className={`px-3.5 py-1.5 rounded-full font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
-                activeDept === dept
-                  ? 'bg-[var(--accent)] text-white font-semibold shadow-xs'
-                  : 'bg-[var(--color-surface)] text-[var(--ink)]/80 hover:text-[var(--ink)] border border-[var(--line)]'
-              }`}
-            >
-              {dept}
-            </button>
-          ))}
+        {/* Department Filter Tabs — Signature Club Capsule Toggles */}
+        <div className="flex flex-wrap items-center gap-1.5 pb-8 border-b border-[var(--line)] mb-8">
+          <div className="flex flex-wrap items-center gap-1 p-1.5 bg-[#121620] border border-white/10 rounded-full shadow-xs">
+            {departments.map((dept) => (
+              <button
+                key={dept}
+                onClick={() => setActiveDept(dept)}
+                className={`px-4 py-1.5 rounded-full font-mono text-xs uppercase font-bold tracking-wider transition-all cursor-pointer ${
+                  activeDept === dept
+                    ? 'bg-[#FFB52E] text-[#0A0D14] font-extrabold shadow-sm'
+                    : 'text-[#C6CAD0] hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {dept}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Team Grid */}

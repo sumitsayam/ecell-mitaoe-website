@@ -5,7 +5,20 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/sponsors',
+        destination: '/initiatives',
+        permanent: false,
+      },
+      {
+        source: '/collaborations',
+        destination: '/contact',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
-

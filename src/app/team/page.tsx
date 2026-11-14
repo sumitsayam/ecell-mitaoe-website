@@ -35,19 +35,19 @@ export default function TeamDirectoryPage() {
         </div>
       </section>
 
-      {/* Department Tabs */}
+      {/* Department Tabs — Signature Club Capsule Toggles */}
       <section className="py-4 border-b border-[var(--color-border)] bg-[var(--color-surface)] sticky top-16 z-30 shadow-2xs">
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+          <div className="flex items-center gap-1 p-1.5 bg-[#121620] border border-white/10 rounded-full overflow-x-auto shadow-xs">
             {departments.map((dept) => (
               <button
                 key={dept}
                 onClick={() => setSelectedDept(dept)}
                 type="button"
-                className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase font-bold whitespace-nowrap transition-all cursor-pointer ${
+                className={`px-4 py-1.5 rounded-full text-xs font-mono uppercase font-bold whitespace-nowrap transition-all cursor-pointer ${
                   selectedDept === dept
-                    ? 'bg-[var(--accent)] text-white shadow-2xs'
-                    : 'text-[var(--ink)]/75 hover:text-[var(--accent)] hover:bg-[var(--color-surface-hover)]'
+                    ? 'bg-[#FFB52E] text-[#0A0D14] font-extrabold shadow-sm'
+                    : 'text-[#C6CAD0] hover:text-white hover:bg-white/10'
                 }`}
               >
                 {dept}

@@ -54,17 +54,17 @@ export default function EventsDirectoryPage() {
       <section className="py-4 border-b border-[var(--color-border)] bg-[var(--color-surface)] sticky top-16 z-30 shadow-2xs">
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-            {/* Status Tabs */}
-            <div className="flex items-center gap-1.5 p-1 bg-[var(--bg)] rounded-full border border-[var(--color-border)] self-start">
+            {/* Status Tabs — Signature Club Capsule Toggles */}
+            <div className="flex items-center gap-1 p-1.5 bg-[#121620] border border-white/10 rounded-full self-start shadow-xs">
               {(['all', 'upcoming', 'ongoing', 'past'] as const).map((status) => (
                 <button
                   key={status}
                   onClick={() => setSelectedStatus(status)}
                   type="button"
-                  className={`px-3 py-1 rounded-full text-xs font-mono uppercase font-bold tracking-wider transition-all cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase font-bold tracking-wider transition-all cursor-pointer ${
                     selectedStatus === status
-                      ? 'bg-[var(--accent)] text-white shadow-2xs'
-                      : 'text-[var(--color-muted)] hover:text-[var(--accent)]'
+                      ? 'bg-[#FFB52E] text-[#0A0D14] font-extrabold shadow-sm'
+                      : 'text-[#C6CAD0] hover:text-white hover:bg-white/10'
                   }`}
                 >
                   {status}
@@ -74,16 +74,16 @@ export default function EventsDirectoryPage() {
 
             {/* Category & Search */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
+              <div className="flex items-center gap-1 p-1.5 bg-[#121620] border border-white/10 rounded-full overflow-x-auto pb-1.5 sm:pb-1.5 shadow-xs">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
                     type="button"
-                    className={`px-3 py-1 rounded-full text-xs font-mono uppercase font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase font-bold whitespace-nowrap transition-colors cursor-pointer ${
                       selectedCategory === cat
-                        ? 'bg-[var(--accent)] text-white'
-                        : 'bg-[var(--bg)] text-[var(--ink)]/80 hover:text-[var(--accent)] border border-[var(--color-border)]'
+                        ? 'bg-[#FFB52E] text-[#0A0D14] font-extrabold shadow-sm'
+                        : 'text-[#C6CAD0] hover:text-white hover:bg-white/10'
                     }`}
                   >
                     {cat}

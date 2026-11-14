@@ -82,21 +82,23 @@ export default function InsightsPage() {
           </div>
         )}
 
-        {/* Category Filters */}
-        <div className="flex flex-wrap items-center gap-2 mb-8 pb-4 border-b border-[var(--color-border)]">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
-                selectedCategory === cat
-                  ? 'bg-[var(--accent)] text-white font-semibold shadow-xs'
-                  : 'bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-muted)] border border-[var(--color-border)]'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* Category Filters — Signature Club Capsule Toggles */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-8 pb-4 border-b border-[var(--color-border)]">
+          <div className="flex flex-wrap items-center gap-1 p-1.5 bg-[#121620] border border-white/10 rounded-full shadow-xs">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-1.5 rounded-full font-mono text-xs uppercase font-bold tracking-wider transition-all cursor-pointer ${
+                  selectedCategory === cat
+                    ? 'bg-[#FFB52E] text-[#0A0D14] font-extrabold shadow-sm'
+                    : 'text-[#C6CAD0] hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Article Grid */}
