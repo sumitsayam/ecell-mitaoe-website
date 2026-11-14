@@ -1,30 +1,32 @@
 'use client';
 
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 
 /* ────────────────────────────────────────────────────────────────────────
- *  RollingTitle — Odometer-Style Rolling Hover Animation
+ *  RollingTitle — In-Place Character Scramble & Cipher Hover Animation
  *
  *  Specifications:
  *  • Line 1: "E-CELL" in --accent
  *  • Line 2: "MIT AOE" in --ink (with real space)
- *  • Heavy grotesk / display font matching cover typography
+ *  • In-place character scrambling (hacker/matrix cipher morph) on hover
+ *  • Individual letter hover & full title hover sweeps
+ *  • Absolutely NO vertical strip, NO translateY, NO stacked cells
+ *  • Completely eliminates any upward or downward clipping artifacts
+ *  • Zero layout shift: normal-flow invisible anchor locks exact character box
+ *  • Direct DOM textContent manipulation via rAF (0 React re-renders)
  *  • Real text with aria-label="E-Cell MIT AOE" for SEO & accessibility
- *  • Zero Cumulative Layout Shift (real letter in normal flow sets width/height)
- *  • 7-cell strip per column: [real letter, 5 random glyphs, real letter]
- *  • Glyphs from: 0123456789 #$%&@*+=?/<>{}[]|~^
- *  • WAAPI transform animation: translateY(0) -> translateY(-(6/7)*100%)
- *  • 700ms duration, cubic-bezier(.7, 0, .2, 1), delay = columnIndex * 45ms
- *  • will-change: transform active only during run
- *  • Re-arms on completion, ignores hovers while running
- *  • prefers-reduced-motion: no roll
+ *  • prefers-reduced-motion: static display with no scramble
  * ────────────────────────────────────────────────────────────────────── */
 
-const GLYPH_POOL = '0123456789#$%&@*+=?/<>{}[]|~^';
+const STANDARD_GLYPHS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#$&*+?<>~%@';
+const NARROW_GLYPHS = '!|/:;1ilI[]';
 
-function getRandomGlyph(): string {
-  const idx = Math.floor(Math.random() * GLYPH_POOL.length);
-  return GLYPH_POOL[idx];
+function getRandomGlyph(target: string): string {
+  if (target === ' ' || target === '\u00A0') return '\u00A0';
+  if (target === 'I' || target === '-') {
+    return NARROW_GLYPHS[Math.floor(Math.random() * NARROW_GLYPHS.length)];
+  }
+  return STANDARD_GLYPHS[Math.floor(Math.random() * STANDARD_GLYPHS.length)];
 }
 
 interface LetterCol {
@@ -36,102 +38,149 @@ interface LetterCol {
 const LINE_1 = 'E-CELL';
 const LINE_2 = 'MIT AOE';
 
+let counter = 0;
+const LINE_1_COLS: LetterCol[] = LINE_1.split('').map((char) => ({
+  char,
+  isSpace: char === ' ',
+  globalIndex: counter++,
+}));
+
+const LINE_2_COLS: LetterCol[] = LINE_2.split('').map((char) => ({
+  char,
+  isSpace: char === ' ',
+  globalIndex: counter++,
+}));
+
+const ALL_COLS: LetterCol[] = [...LINE_1_COLS, ...LINE_2_COLS];
+const TOTAL_CHARS = ALL_COLS.length;
+
 export function RollingTitle({ className = '' }: { className?: string }) {
-  const isRunningRef = useRef<boolean>(false);
-  const stripsRef = useRef<(HTMLSpanElement | null)[]>([]);
+  const charDisplayRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const charEndTimesRef = useRef<number[]>([]);
+  const charStartTimesRef = useRef<number[]>([]);
+  const rafIdRef = useRef<number>(0);
+  const isLoopRunningRef = useRef<boolean>(false);
+  const frameCountRef = useRef<number>(0);
 
-  // 5 random glyphs per column, re-randomized before each run
-  const [randomGlyphs, setRandomGlyphs] = useState<string[][]>(() => {
-    const totalChars = LINE_1.length + LINE_2.length;
-    return Array.from({ length: totalChars }, () =>
-      Array.from({ length: 5 }, () => getRandomGlyph())
-    );
-  });
-
-  const randomizeMiddleCells = useCallback(() => {
-    const totalChars = LINE_1.length + LINE_2.length;
-    const next: string[][] = [];
-    for (let i = 0; i < totalChars; i++) {
-      next.push(Array.from({ length: 5 }, () => getRandomGlyph()));
-    }
-    setRandomGlyphs(next);
+  // Initialize timing arrays
+  useEffect(() => {
+    charEndTimesRef.current = new Array(TOTAL_CHARS).fill(0);
+    charStartTimesRef.current = new Array(TOTAL_CHARS).fill(0);
   }, []);
 
-  const triggerRoll = useCallback(() => {
-    if (isRunningRef.current) return;
+  // Main animation frame loop
+  const step = useCallback(() => {
+    const now = performance.now();
+    frameCountRef.current++;
+    const shouldUpdateGlyph = frameCountRef.current % 2 === 0; // ~30fps glyph changes for crisp legibility
+    let anyActive = false;
 
+    for (let i = 0; i < TOTAL_CHARS; i++) {
+      const col = ALL_COLS[i];
+      if (col.isSpace) continue;
+
+      const span = charDisplayRefs.current[i];
+      if (!span) continue;
+
+      const startTime = charStartTimesRef.current[i] || 0;
+      const endTime = charEndTimesRef.current[i] || 0;
+
+      if (now < startTime) {
+        // Not started yet (wave stagger delay)
+        anyActive = true;
+        continue;
+      }
+
+      if (now < endTime) {
+        // Active scramble
+        anyActive = true;
+        if (shouldUpdateGlyph) {
+          span.textContent = getRandomGlyph(col.char);
+        }
+      } else if (endTime > 0) {
+        // Just finished: lock onto target character
+        span.textContent = col.char;
+        charEndTimesRef.current[i] = 0;
+        charStartTimesRef.current[i] = 0;
+      }
+    }
+
+    if (anyActive) {
+      rafIdRef.current = requestAnimationFrame(step);
+    } else {
+      isLoopRunningRef.current = false;
+      // Ensure all characters are locked
+      for (let i = 0; i < TOTAL_CHARS; i++) {
+        const col = ALL_COLS[i];
+        const span = charDisplayRefs.current[i];
+        if (span && !col.isSpace) {
+          span.textContent = col.char;
+        }
+      }
+    }
+  }, []);
+
+  const startLoopIfNeeded = useCallback(() => {
+    if (!isLoopRunningRef.current) {
+      isLoopRunningRef.current = true;
+      rafIdRef.current = requestAnimationFrame(step);
+    }
+  }, [step]);
+
+  // Trigger full title scramble wave (left to right)
+  const triggerFullScramble = useCallback(() => {
     if (typeof window !== 'undefined') {
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (prefersReducedMotion) return;
     }
 
-    isRunningRef.current = true;
-    randomizeMiddleCells();
+    const now = performance.now();
+    for (let i = 0; i < TOTAL_CHARS; i++) {
+      const col = ALL_COLS[i];
+      if (col.isSpace) continue;
 
-    // Use requestAnimationFrame so the re-randomized middle cells commit before WAAPI starts
-    requestAnimationFrame(() => {
-      const strips = stripsRef.current.filter(Boolean) as HTMLSpanElement[];
-      if (strips.length === 0) {
-        isRunningRef.current = false;
-        return;
+      // Stagger start time across columns (30ms per col)
+      const stagger = i * 30;
+      charStartTimesRef.current[i] = now + stagger;
+      // Scramble duration: 240ms
+      charEndTimesRef.current[i] = now + stagger + 240;
+    }
+
+    startLoopIfNeeded();
+  }, [startLoopIfNeeded]);
+
+  // Trigger single character scramble on individual hover
+  const scrambleSingleChar = useCallback(
+    (index: number) => {
+      if (typeof window !== 'undefined') {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) return;
       }
 
-      const animPromises: Promise<Animation>[] = [];
+      const col = ALL_COLS[index];
+      if (!col || col.isSpace) return;
 
-      strips.forEach((strip) => {
-        const colIdx = Number(strip.dataset.colIndex || 0);
-        strip.style.willChange = 'transform';
+      const now = performance.now();
+      charStartTimesRef.current[index] = now;
+      charEndTimesRef.current[index] = now + 240; // 240ms duration
+      startLoopIfNeeded();
+    },
+    [startLoopIfNeeded]
+  );
 
-        const animation = strip.animate(
-          [
-            { transform: 'translateY(0%)' },
-            { transform: 'translateY(-85.714285%)' }, // -(6/7) * 100%
-          ],
-          {
-            duration: 700,
-            easing: 'cubic-bezier(0.7, 0, 0.2, 1)',
-            delay: colIdx * 45,
-            fill: 'forwards',
-          }
-        );
-
-        animPromises.push(animation.finished);
-      });
-
-      Promise.all(animPromises)
-        .then(() => {
-          strips.forEach((strip) => {
-            strip.style.willChange = 'auto';
-            strip.style.transform = 'translateY(0%)';
-          });
-          isRunningRef.current = false;
-        })
-        .catch(() => {
-          isRunningRef.current = false;
-        });
-    });
-  }, [randomizeMiddleCells]);
-
-  // Play once on initial load
+  // Play once on initial mount
   useEffect(() => {
     const timer = setTimeout(() => {
-      triggerRoll();
+      triggerFullScramble();
     }, 200);
-    return () => clearTimeout(timer);
-  }, [triggerRoll]);
 
-  let globalCounter = 0;
-  const line1Cols: LetterCol[] = LINE_1.split('').map((char) => ({
-    char,
-    isSpace: char === ' ',
-    globalIndex: globalCounter++,
-  }));
-
-  const line2Cols: LetterCol[] = LINE_2.split('').map((char) => ({
-    char,
-    isSpace: char === ' ',
-    globalIndex: globalCounter++,
-  }));
+    return () => {
+      clearTimeout(timer);
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, [triggerFullScramble]);
 
   const renderColumn = (col: LetterCol) => {
     if (col.isSpace) {
@@ -139,7 +188,7 @@ export function RollingTitle({ className = '' }: { className?: string }) {
         <span
           key={`space-${col.globalIndex}`}
           className="inline-block leading-none select-none"
-          style={{ width: '0.3em' }}
+          style={{ width: '0.28em' }}
           aria-hidden="true"
         >
           &nbsp;
@@ -147,47 +196,27 @@ export function RollingTitle({ className = '' }: { className?: string }) {
       );
     }
 
-    const middleGlyphs = randomGlyphs[col.globalIndex] || ['#', '%', '&', '*', '?'];
-
     return (
       <span
         key={`col-${col.globalIndex}`}
-        className="relative inline-block overflow-hidden leading-none align-top"
-        style={{ lineHeight: 1 }}
+        className="relative inline-block text-center align-baseline cursor-pointer transition-transform duration-150 hover:scale-105 active:scale-95"
+        onPointerEnter={() => scrambleSingleChar(col.globalIndex)}
         aria-hidden="true"
       >
-        {/* Normal-flow character: maintains exact width and height, 0 CLS */}
+        {/* Invisible anchor character in normal flow: locks exact width and height */}
         <span className="invisible select-none leading-none block" style={{ lineHeight: 1 }}>
           {col.char}
         </span>
 
-        {/* 7-cell absolute strip */}
+        {/* In-place display character: absolutely centered, zero vertical overflow */}
         <span
           ref={(el) => {
-            stripsRef.current[col.globalIndex] = el;
+            charDisplayRefs.current[col.globalIndex] = el;
           }}
-          data-col-index={col.globalIndex}
-          className="absolute top-0 left-0 w-full flex flex-col leading-none"
-          style={{ transform: 'translateY(0%)', lineHeight: 1 }}
+          className="absolute inset-0 flex items-center justify-center select-none leading-none"
+          style={{ lineHeight: 1 }}
         >
-          {/* Cell 0: Real letter */}
-          <span className="block leading-none text-center select-none" style={{ lineHeight: 1 }}>
-            {col.char}
-          </span>
-          {/* Cells 1..5: Random glyphs */}
-          {middleGlyphs.map((glyph, gIdx) => (
-            <span
-              key={gIdx}
-              className="block leading-none text-center select-none"
-              style={{ lineHeight: 1 }}
-            >
-              {glyph}
-            </span>
-          ))}
-          {/* Cell 6: Real letter */}
-          <span className="block leading-none text-center select-none" style={{ lineHeight: 1 }}>
-            {col.char}
-          </span>
+          {col.char}
         </span>
       </span>
     );
@@ -195,21 +224,20 @@ export function RollingTitle({ className = '' }: { className?: string }) {
 
   return (
     <h1
-      className={`select-none font-display font-extrabold text-7xl sm:text-9xl md:text-[11rem] lg:text-[13rem] xl:text-[15rem] tracking-tighter leading-[0.84] text-center cursor-default ${className}`}
+      className={`select-none font-display font-extrabold text-7xl sm:text-9xl md:text-[11rem] lg:text-[13rem] xl:text-[15rem] tracking-tighter leading-[0.88] text-center cursor-default ${className}`}
       aria-label="E-Cell MIT AOE"
-      onPointerEnter={triggerRoll}
-      onClick={triggerRoll}
+      onPointerEnter={triggerFullScramble}
+      onClick={triggerFullScramble}
     >
       {/* Line 1: E-CELL in --accent */}
       <span className="block text-[var(--accent)]">
-        {line1Cols.map(renderColumn)}
+        {LINE_1_COLS.map(renderColumn)}
       </span>
 
       {/* Line 2: MIT AOE in --ink */}
       <span className="block text-[var(--ink)]">
-        {line2Cols.map(renderColumn)}
+        {LINE_2_COLS.map(renderColumn)}
       </span>
     </h1>
   );
 }
-
