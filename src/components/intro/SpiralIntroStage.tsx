@@ -2,45 +2,35 @@
 
 import React, { useRef, useEffect, useCallback } from 'react';
 import TitleScreen from './TitleScreen';
-import { ArrowDown, ArrowUpRight, Play, Sparkles } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Play } from 'lucide-react';
 
 /* ────────────────────────────────────────────────────────────────────────
- *  SpiralIntroStage — Reversible Scroll-Controlled Opening Experience
+ *  SpiralIntroStage — Signature Reversible Editorial Spiral
  *
- *  Inspired by contentarchitecture.dev:
- *  • Stage 01: Split opening hero (Editorial copy left, 2D Canvas spiral right)
- *  • Stage 02: Pinned scroll progress glides spiral to center & expands rings
- *  • Stage 03: Expanding circular aperture reveals underlying architectural plate
- *  • Stage 04: Continuous scroll transition into the homepage
- *  • 100% REVERSIBLE: Scrolling back up scrubs the timeline in reverse!
- *  • ZERO React state updates inside requestAnimationFrame (60-120fps smooth)
- *  • Offscreen canvas cached dot grid + context ref caching
+ *  Mathematically calibrated against the reference:
+ *  • R(k) = R0 * 1.28^k, where R0 = 0.05 * min(viewportWidth, viewportHeight)
+ *  • fs(R) = 9 + 0.045 * R px
+ *  • n = floor(2 * PI * R / (0.66 * fs))
+ *  • theta = a0 - i * (2 * PI / n), rotated by (theta - PI/2)
+ *  • Letter tops point inward, reading left-to-right at the bottom
+ *  • Alternate rings spin opposite: speed = 0.06 / (1 + 0.12k) rad/s
+ *  • 1.8s scattered-letter random threshold load-in (single pass)
+ *  • Desktop mask: mask-image linear gradient prevents copy overlap
+ *  • Mobile layout: centered rings with copy isolated below
+ *  • High performance: ctx.setTransform, font set per ring, DPR <= 1.5,
+ *    culling inside aperture & outside bounds, zero React renders in RAF
  * ────────────────────────────────────────────────────────────────────── */
 
-interface RingDefinition {
-  phrase: string;
-  radius: number;        // base radius in CSS px
-  fontSize: number;      // base font size in px
-  speed: number;         // radians per second
-  direction: 1 | -1;     // 1 = clockwise, -1 = counter-clockwise
-  opacity: number;
-  hasGuideOrbit?: boolean;
-}
+const RING_COUNT = 12;
+const REPEATED_PHRASE = 'ENTREPRENEURSHIP CELL · MIT AOE PUNE · BUILDERS · IDEAS INTO IMPACT · ';
 
-const SPIRAL_RINGS: RingDefinition[] = [
-  { phrase: 'MITAOE E-CELL · ', radius: 52, fontSize: 10, speed: 0.32, direction: 1, opacity: 0.70, hasGuideOrbit: true },
-  { phrase: 'IDEAS INTO IMPACT · ', radius: 98, fontSize: 11, speed: 0.26, direction: -1, opacity: 0.75 },
-  { phrase: 'INNOVATION & ENTREPRENEURSHIP · ', radius: 148, fontSize: 12, speed: 0.22, direction: 1, opacity: 0.80, hasGuideOrbit: true },
-  { phrase: 'IDEATE · VALIDATE · BUILD · SCALE · ', radius: 205, fontSize: 13, speed: 0.18, direction: -1, opacity: 0.84 },
-  { phrase: 'COLLABORATE · EXECUTE · CREATE · ', radius: 268, fontSize: 14, speed: 0.15, direction: 1, opacity: 0.88, hasGuideOrbit: true },
-  { phrase: 'CAMPUS TO VENTURE PLATFORM · ', radius: 335, fontSize: 15, speed: 0.12, direction: -1, opacity: 0.91 },
-  { phrase: 'STUDENT FOUNDERS ECOSYSTEM · ', radius: 405, fontSize: 16, speed: 0.10, direction: 1, opacity: 0.93, hasGuideOrbit: true },
-  { phrase: 'CIIE PUNE · ALANDI CAMPUS · ', radius: 480, fontSize: 17, speed: 0.08, direction: -1, opacity: 0.95 },
-  { phrase: 'MIT ACADEMY OF ENGINEERING · ', radius: 560, fontSize: 18, speed: 0.07, direction: 1, opacity: 0.96, hasGuideOrbit: true },
-  { phrase: 'THE PLATFORM FOR BUILDERS · ', radius: 645, fontSize: 19, speed: 0.055, direction: -1, opacity: 0.97 },
-  { phrase: 'WHERE IDEAS FIND THEIR DIRECTION · ', radius: 735, fontSize: 20, speed: 0.045, direction: 1, opacity: 0.98, hasGuideOrbit: true },
-  { phrase: 'ENTREPRENEURSHIP CELL MITAOE · ', radius: 830, fontSize: 21, speed: 0.035, direction: -1, opacity: 0.99 },
-];
+interface RingData {
+  radius: number;
+  fontSize: number;
+  charCount: number;
+  speed: number;
+  thresholds: Float32Array;
+}
 
 interface SpiralIntroStageProps {
   onEnterHome?: () => void;
@@ -54,21 +44,30 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const offscreenGridRef = useRef<HTMLCanvasElement | null>(null);
 
-  // DOM Refs for zero-react-render UI updates
+  // UI DOM Refs (Zero React re-renders)
   const heroOverlayRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
   const progressRingRef = useRef<SVGCircleElement>(null);
 
-  // Animation & Timeline physics
+  // Rings dynamic data
+  const ringsDataRef = useRef<RingData[]>([]);
+  const anglesRef = useRef<Float64Array>(new Float64Array(RING_COUNT));
+
+  // Physics & Animation Refs
   const rafRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
-  const anglesRef = useRef<number[]>(SPIRAL_RINGS.map((_, i) => i * 0.42));
+  const loadStartTimeRef = useRef<number>(0);
+  const revealProgressRef = useRef<number>(0);
   const scrollProgressRef = useRef<number>(0);
   const currentProgressRef = useRef<number>(0);
   const isHoldingRef = useRef<boolean>(false);
   const isDesktopRef = useRef<boolean>(false);
+  const isVisibleRef = useRef<boolean>(true);
+  const slowFrameCountRef = useRef<number>(0);
+  const dprCapRef = useRef<number>(1.5);
+  const reducedMotionRef = useRef<boolean>(false);
 
-  // ── Scroll to next stage helper ──
+  // Scroll to home
   const handleScrollToHome = useCallback(() => {
     if (onEnterHome) {
       onEnterHome();
@@ -80,126 +79,144 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     }
   }, [onEnterHome]);
 
-  // ── Frame Rendering (Optimized for 60-120fps) ──
+  // ── Render Single Frame (60–120 FPS Target) ──
   const renderFrame = useCallback((canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, dpr: number) => {
     const w = canvas.width;
     const h = canvas.height;
-
-    const p = currentProgressRef.current;
     const isDesktop = isDesktopRef.current;
 
-    // Smooth horizontal glide: on desktop, start offset to right (0.68) and center (0.5) by p=0.35
-    const centerShiftProgress = Math.min(1, p / 0.35);
-    const cx = isDesktop ? (w * (0.68 - 0.18 * centerShiftProgress)) : (w / 2);
+    // Center coordinates
+    const p = currentProgressRef.current;
+    // On desktop, rings center gently at 0.55w initially, transitioning to 0.5w
+    const cx = isDesktop ? (w * (0.55 - 0.05 * Math.min(1, p / 0.35))) : (w / 2);
     const cy = h / 2;
 
     // 1. Clear background
     ctx.fillStyle = '#07090E';
     ctx.fillRect(0, 0, w, h);
 
-    // 2. Draw cached offscreen dot grid (single blit call!)
+    // 2. Draw cached 22px pitch dot grid (1 blit call)
     if (offscreenGridRef.current) {
       ctx.drawImage(offscreenGridRef.current, 0, 0);
     }
 
-    // 3. Zoom scale: smooth exponential ring expansion
-    const zoomScale = 1 + Math.pow(p, 2.2) * 12.0;
+    // 3. Zoom Scale
+    const zoomScale = 1 + Math.pow(p, 2.2) * 11.0;
 
-    // 4. Render Concentric Typography Rings
+    // 4. Aperture radius calculation (p > 0.32)
+    let holeRadius = 0;
+    if (p > 0.32) {
+      const apertureProgress = (p - 0.32) / 0.60;
+      const maxRadius = Math.hypot(w, h) / 2 + 80 * dpr;
+      holeRadius = Math.pow(apertureProgress, 2.1) * maxRadius;
+    }
+
+    const reveal = revealProgressRef.current;
+    const rings = ringsDataRef.current;
+    const angles = anglesRef.current;
+
+    // Set text alignment
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    for (let i = 0; i < SPIRAL_RINGS.length; i++) {
-      const ring = SPIRAL_RINGS[i];
-      const angle = anglesRef.current[i];
-      const r = ring.radius * dpr * zoomScale;
-      const fontSize = Math.max(8, ring.fontSize * dpr * Math.pow(zoomScale, 0.62));
+    // 5. Draw Rings
+    for (let k = 0; k < rings.length; k++) {
+      const ring = rings[k];
+      const scaledR = ring.radius * zoomScale;
+      const scaledFs = ring.fontSize * Math.pow(zoomScale, 0.62);
 
-      // Calculate opacity fade as ring zooms out of field of view
-      let alpha = ring.opacity;
-      if (p > 0.20) {
-        const fadeThreshold = 0.20 + (i / SPIRAL_RINGS.length) * 0.45;
+      // Cull whole ring if inside aperture
+      if (holeRadius > 0 && scaledR + scaledFs < holeRadius) {
+        continue;
+      }
+
+      // Cull if scaled far out of view
+      if (scaledR > Math.hypot(w, h) + 200 * dpr) {
+        continue;
+      }
+
+      // Fade out outer rings as aperture expands
+      let alpha = 0.88;
+      if (p > 0.25) {
+        const fadeThreshold = 0.25 + (k / rings.length) * 0.45;
         if (p > fadeThreshold) {
           alpha *= Math.max(0, 1 - (p - fadeThreshold) / 0.35);
         }
       }
+      if (alpha <= 0.02) continue;
 
-      if (alpha <= 0.02 || r < 8) continue;
-
-      // Subtle guide orbit behind text
-      if (ring.hasGuideOrbit && alpha > 0.18) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.12})`;
-        ctx.lineWidth = 1 * dpr;
-        ctx.setLineDash([2 * dpr, 6 * dpr]);
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // Draw repeating characters along circular path
-      ctx.save();
-      ctx.font = `500 ${fontSize}px 'IBM Plex Mono', 'Space Mono', monospace`;
+      // Set font once per ring
+      ctx.font = `500 ${scaledFs}px 'IBM Plex Mono', 'Space Mono', monospace`;
       ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
 
-      const charWidthEstimate = fontSize * 0.62;
-      const charAngularStep = charWidthEstimate / r;
-      const totalChars = Math.floor((Math.PI * 2) / charAngularStep);
+      const n = ring.charCount;
+      const a0 = angles[k];
+      const step = (Math.PI * 2) / n;
+      const phraseLen = REPEATED_PHRASE.length;
+      const thresholds = ring.thresholds;
 
-      const phrase = ring.phrase;
-      let charIdx = 0;
+      for (let i = 0; i < n; i++) {
+        // 1.8s scattered letter reveal check
+        if (thresholds[i] > reveal) continue;
 
-      for (let k = 0; k < totalChars; k++) {
-        const theta = angle + k * charAngularStep;
-        const char = phrase[charIdx % phrase.length];
-        charIdx++;
+        // Angle & Position: theta = a0 - i * (2*PI/n)
+        const theta = a0 - i * step;
+        const x = cx + scaledR * Math.cos(theta);
+        const y = cy + scaledR * Math.sin(theta);
 
-        const x = cx + Math.cos(theta) * r;
-        const y = cy + Math.sin(theta) * r;
+        // Frustum culling: skip letter if outside viewport bounds (+40px)
+        if (x < -40 * dpr || x > w + 40 * dpr || y < -40 * dpr || y > h + 40 * dpr) {
+          continue;
+        }
 
-        // Viewport frustum culling
-        if (x < -80 || x > w + 80 || y < -80 || y > h + 80) continue;
+        // Aperture culling: skip letter if inside hole
+        if (holeRadius > 0) {
+          const distToCenter = Math.hypot(x - cx, y - cy);
+          if (distToCenter < holeRadius + 4 * dpr) continue;
+        }
 
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(theta + Math.PI / 2);
+        // Rotation: theta - PI/2 (tops point toward center, reads L to R at bottom)
+        const rot = theta - Math.PI / 2;
+        const c = Math.cos(rot);
+        const s = Math.sin(rot);
+
+        const char = REPEATED_PHRASE[i % phraseLen];
+
+        // Hardware matrix transform without save() and restore()
+        ctx.setTransform(c, s, -s, c, x, y);
         ctx.fillText(char, 0, 0);
-        ctx.restore();
       }
-
-      ctx.restore();
     }
 
-    // 5. Stage 03 Circular Aperture Punch (Reveals underlying TitleScreen/Ledger)
-    if (p > 0.32) {
-      const apertureProgress = (p - 0.32) / 0.58; // 0.0 to 1.0
-      const maxRadius = Math.hypot(w, h) / 2 + 100 * dpr;
-      const holeRadius = Math.pow(apertureProgress, 2.1) * maxRadius;
+    // Reset matrix transform once
+    ctx.resetTransform();
 
-      if (holeRadius > 1.5) {
-        // Cut circular hole straight through canvas
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+    // 6. Aperture Punch & Glowing Edge
+    if (holeRadius > 2) {
+      // Punch circular hole straight through canvas
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
 
-        // Crisp white boundary stroke
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, 0.7 - apertureProgress * 0.6)})`;
-        ctx.lineWidth = 1.8 * dpr;
-        ctx.stroke();
-        ctx.restore();
-      }
+      // Sharp white glowing boundary stroke
+      ctx.beginPath();
+      ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, 0.75 - (p - 0.32) * 0.8)})`;
+      ctx.lineWidth = 1.6 * dpr;
+      ctx.stroke();
     }
   }, []);
 
-  // ── Animation Loop (RAF) ──
+  // ── Main RAF Animation Loop ──
   const animate = useCallback((timestamp: number) => {
+    if (!isVisibleRef.current) {
+      rafRef.current = requestAnimationFrame(animate);
+      return;
+    }
+
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
     if (!canvas || !ctx) {
@@ -207,47 +224,61 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       return;
     }
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const frameStart = performance.now();
+    const dpr = Math.min(window.devicePixelRatio || 1, dprCapRef.current);
     const dt = lastTimeRef.current ? Math.min(0.04, (timestamp - lastTimeRef.current) / 1000) : 0.016;
     lastTimeRef.current = timestamp;
 
-    // Update ring angles
-    for (let i = 0; i < SPIRAL_RINGS.length; i++) {
-      anglesRef.current[i] += SPIRAL_RINGS[i].speed * SPIRAL_RINGS[i].direction * dt;
+    // 1.8s Scattered letter reveal calculation (single pass)
+    if (loadStartTimeRef.current === 0) {
+      loadStartTimeRef.current = timestamp;
+    }
+    if (reducedMotionRef.current) {
+      revealProgressRef.current = 1.0;
+    } else if (revealProgressRef.current < 1.0) {
+      const elapsed = (timestamp - loadStartTimeRef.current) / 1800; // 1.8s
+      // Ease out cubic
+      const eased = Math.min(1.0, 1 - Math.pow(1 - Math.min(1, elapsed), 3));
+      revealProgressRef.current = eased;
     }
 
-    // If holding down, smoothly scroll the window forward
+    // Update rotation angles (unless reduced motion)
+    if (!reducedMotionRef.current) {
+      const rings = ringsDataRef.current;
+      const angles = anglesRef.current;
+      for (let k = 0; k < rings.length; k++) {
+        angles[k] += rings[k].speed * dt;
+      }
+    }
+
+    // Click & Hold: advance window scroll smoothly
     if (isHoldingRef.current) {
-      const scrollSpeed = 16 * (1 + currentProgressRef.current * 1.8);
-      window.scrollBy({ top: scrollSpeed, behavior: 'auto' });
+      const scrollStep = 18 * (1 + currentProgressRef.current * 1.8);
+      window.scrollBy({ top: scrollStep, behavior: 'auto' });
     }
 
-    // Smooth lerp progress towards actual ScrollTrigger progress
+    // Lerp current progress to actual scroll progress
     const targetP = scrollProgressRef.current;
     currentProgressRef.current += (targetP - currentProgressRef.current) * 0.16;
-
     const p = currentProgressRef.current;
 
-    // ── Direct DOM updates for UI elements (zero React re-renders) ──
+    // ── Direct DOM updates (zero React re-renders) ──
     if (heroOverlayRef.current) {
-      const heroAlpha = Math.max(0, 1 - p * 3.8);
+      const heroAlpha = Math.max(0, 1 - p * 3.4);
       heroOverlayRef.current.style.opacity = heroAlpha.toFixed(3);
-      heroOverlayRef.current.style.transform = `translateX(${(-p * 40).toFixed(1)}px)`;
-      heroOverlayRef.current.style.pointerEvents = heroAlpha > 0.1 ? 'auto' : 'none';
+      heroOverlayRef.current.style.transform = `translateX(${(-p * 35).toFixed(1)}px)`;
+      heroOverlayRef.current.style.pointerEvents = heroAlpha > 0.08 ? 'auto' : 'none';
     }
 
     if (pillRef.current) {
-      // Pill is prominent between p = 0.15 and p = 0.55
       let pillAlpha = 0;
-      if (p < 0.15) {
-        pillAlpha = 1;
-      } else if (p <= 0.45) {
+      if (p < 0.45) {
         pillAlpha = 1;
       } else if (p < 0.65) {
         pillAlpha = Math.max(0, 1 - (p - 0.45) / 0.20);
       }
       pillRef.current.style.opacity = pillAlpha.toFixed(3);
-      pillRef.current.style.pointerEvents = pillAlpha > 0.2 ? 'auto' : 'none';
+      pillRef.current.style.pointerEvents = pillAlpha > 0.15 ? 'auto' : 'none';
     }
 
     if (progressRingRef.current) {
@@ -257,30 +288,63 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     }
 
     if (canvasWrapperRef.current) {
-      // Fade canvas to 0 when aperture completely envelopes viewport
       const canvasAlpha = p > 0.88 ? Math.max(0, 1 - (p - 0.88) / 0.12) : 1;
       canvasWrapperRef.current.style.opacity = canvasAlpha.toFixed(3);
       canvasWrapperRef.current.style.pointerEvents = p > 0.85 ? 'none' : 'auto';
+
+      // Desktop copy protection mask: only active at initial scroll (p < 0.35)
+      if (isDesktopRef.current) {
+        if (p < 0.35) {
+          canvasWrapperRef.current.style.maskImage = 'linear-gradient(to right, transparent 0%, transparent 38%, #000 62%)';
+          canvasWrapperRef.current.style.webkitMaskImage = 'linear-gradient(to right, transparent 0%, transparent 38%, #000 62%)';
+        } else {
+          canvasWrapperRef.current.style.maskImage = 'none';
+          canvasWrapperRef.current.style.webkitMaskImage = 'none';
+        }
+      } else {
+        canvasWrapperRef.current.style.maskImage = 'none';
+        canvasWrapperRef.current.style.webkitMaskImage = 'none';
+      }
     }
 
-    // Render Canvas Frame
+    // Render frame
     renderFrame(canvas, ctx, dpr);
+
+    // Frame watchdog: if frame time > 20ms for 30 consecutive frames, drop DPR to 1
+    const frameDuration = performance.now() - frameStart;
+    if (frameDuration > 20) {
+      slowFrameCountRef.current++;
+      if (slowFrameCountRef.current > 30 && dprCapRef.current > 1.0) {
+        dprCapRef.current = 1.0;
+      }
+    } else {
+      slowFrameCountRef.current = Math.max(0, slowFrameCountRef.current - 1);
+    }
+
+    // Stop drawing entirely once hole covers viewport
+    if (p >= 0.98) {
+      // Park loop until user scrolls back up
+      rafRef.current = requestAnimationFrame(animate);
+      return;
+    }
 
     rafRef.current = requestAnimationFrame(animate);
   }, [renderFrame]);
 
-  // ── Setup Canvas, Dot Grid & GSAP ScrollTrigger ──
+  // ── Setup Canvas, Dot Grid & Mathematical Ring Model ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Cache 2D context
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
     ctxRef.current = ctx;
 
+    // Check prefers-reduced-motion
+    reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const handleResize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, dprCapRef.current);
       const rect = canvas.getBoundingClientRect();
       const w = Math.floor(rect.width * dpr);
       const h = Math.floor(rect.height * dpr);
@@ -288,20 +352,55 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       canvas.width = w;
       canvas.height = h;
 
-      isDesktopRef.current = window.innerWidth >= 1024;
+      const isDesktop = window.innerWidth >= 768;
+      isDesktopRef.current = isDesktop;
 
-      // Pre-render static micro dot grid onto offscreen canvas
+      // ── Reference Formulas ──
+      // R0 = 0.05 * min(viewportWidth, viewportHeight)
+      const viewportMin = Math.min(rect.width, rect.height);
+      const R0 = 0.05 * viewportMin * dpr;
+
+      const newRings: RingData[] = [];
+      for (let k = 0; k < RING_COUNT; k++) {
+        // R(k) = R0 * 1.28^k
+        const radius = R0 * Math.pow(1.28, k);
+        // fs(R) = 9 + 0.045 * R px
+        const cssRadius = radius / dpr;
+        const fontSize = (9 + 0.045 * cssRadius) * dpr;
+        // n = floor(2 * PI * R / (0.66 * fs))
+        const charCount = Math.floor((2 * Math.PI * radius) / (0.66 * fontSize));
+        // Alternate rings spin in opposite directions: speed = 0.06 / (1 + 0.12k) rad/s
+        const speed = (0.06 / (1 + 0.12 * k)) * (k % 2 === 0 ? 1 : -1);
+
+        // Pre-generate random thresholds t in [0, 1] for 1.8s scattered fill-in
+        const thresholds = new Float32Array(charCount);
+        for (let i = 0; i < charCount; i++) {
+          thresholds[i] = Math.random();
+        }
+
+        newRings.push({
+          radius,
+          fontSize,
+          charCount,
+          speed,
+          thresholds,
+        });
+      }
+      ringsDataRef.current = newRings;
+
+      // Pre-render 22px pitch dot grid with 1px dots at 14% opacity onto offscreen canvas
       const offscreen = document.createElement('canvas');
       offscreen.width = w;
       offscreen.height = h;
       const offCtx = offscreen.getContext('2d');
       if (offCtx) {
-        offCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-        const dotSpacing = 28 * dpr;
-        for (let x = 0; x < w; x += dotSpacing) {
-          for (let y = 0; y < h; y += dotSpacing) {
+        offCtx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+        const pitch = 22 * dpr;
+        const dotRadius = 1 * dpr;
+        for (let x = 0; x < w; x += pitch) {
+          for (let y = 0; y < h; y += pitch) {
             offCtx.beginPath();
-            offCtx.arc(x, y, 0.75 * dpr, 0, Math.PI * 2);
+            offCtx.arc(x, y, dotRadius, 0, Math.PI * 2);
             offCtx.fill();
           }
         }
@@ -312,7 +411,23 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // Dynamic import GSAP and ScrollTrigger for SSR safety
+    // Visibility Listener: pause loop when tab is hidden
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = !document.hidden;
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // IntersectionObserver: pause loop when hero is out of view
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        isVisibleRef.current = entry.isIntersecting && !document.hidden;
+      }
+    });
+    if (pinWrapperRef.current) {
+      observer.observe(pinWrapperRef.current);
+    }
+
+    // Unified GSAP + Lenis Ticker
     let scrollTriggerInstance: any = null;
     (async () => {
       try {
@@ -332,28 +447,24 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
           });
         }
       } catch (err) {
-        console.error('Failed to initialize ScrollTrigger:', err);
+        console.error('ScrollTrigger initialization failed:', err);
       }
     })();
 
-    // Start RAF
     rafRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      observer.disconnect();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (scrollTriggerInstance) scrollTriggerInstance.kill();
     };
   }, [animate]);
 
-  // ── Holding Interaction Handlers ──
-  const startHold = () => {
-    isHoldingRef.current = true;
-  };
-
-  const endHold = () => {
-    isHoldingRef.current = false;
-  };
+  // ── Holding Interaction ──
+  const startHold = () => { isHoldingRef.current = true; };
+  const endHold = () => { isHoldingRef.current = false; };
 
   return (
     <div
@@ -373,7 +484,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
         {/* ── TOP LAYER: Dark Canvas with Concentric Spiral & Aperture ── */}
         <div
           ref={canvasWrapperRef}
-          className="absolute inset-0 w-full h-full z-10"
+          className="absolute inset-0 w-full h-full z-10 transition-opacity duration-300"
           onMouseDown={startHold}
           onMouseUp={endHold}
           onMouseLeave={endHold}
@@ -386,26 +497,26 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
             className="w-full h-full block cursor-grab active:cursor-grabbing"
           />
 
-          {/* ── Split Screen Opening Hero Overlay (p = 0 to 0.3) ── */}
+          {/* ── Split Screen Opening Hero Overlay (Desktop: Left, Mobile: Bottom Stack) ── */}
           <div
             ref={heroOverlayRef}
-            className="absolute inset-0 max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 flex flex-col justify-center pointer-events-none z-20"
+            className="absolute inset-0 max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 flex flex-col justify-end md:justify-center pb-16 md:pb-0 pointer-events-none z-20"
           >
-            <div className="max-w-xl text-white">
+            <div className="max-w-xl text-white bg-black/40 md:bg-transparent p-6 md:p-0 rounded-2xl md:rounded-none backdrop-blur-md md:backdrop-blur-none border border-white/10 md:border-none shadow-2xl md:shadow-none">
               {/* Overline Tag */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 font-mono text-[10px] sm:text-xs uppercase tracking-widest text-[#E7F0FF] mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 font-mono text-[10px] sm:text-xs uppercase tracking-widest text-[#E7F0FF] mb-4 sm:mb-6">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#155EEF] animate-pulse" />
                 <span>ENTREPRENEURSHIP CELL · MIT AOE PUNE</span>
               </div>
 
               {/* Main Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight leading-[1.08] text-white mb-6">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight leading-[1.08] text-white mb-4 sm:mb-6">
                 Ideas don&apos;t build <br />
                 <span className="text-[#155EEF] italic font-serif">themselves.</span>
               </h1>
 
               {/* Editorial Subparagraph */}
-              <p className="text-sm sm:text-base font-sans text-slate-300 leading-relaxed mb-8">
+              <p className="text-xs sm:text-sm lg:text-base font-sans text-slate-300 leading-relaxed mb-6 sm:mb-8 max-w-lg">
                 The campus venture engine converting student curiosity into audited startups.
                 ₹25L pre-seed grants, rapid prototyping makerspaces, 100% reimbursed patent filings,
                 and direct access to Western India&apos;s sharpest builder cohort.
@@ -433,7 +544,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
               </div>
 
               {/* Scroll Cue Indicator */}
-              <div className="mt-12 flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-slate-400">
+              <div className="mt-6 sm:mt-10 hidden sm:flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-slate-400">
                 <div className="w-2 h-2 rounded-full border border-slate-400 flex items-center justify-center animate-ping" />
                 <span>Scroll to dive into ecosystem</span>
               </div>
@@ -443,18 +554,18 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
           {/* ── Floating Interactive Center Pill ── */}
           <div
             ref={pillRef}
-            className="absolute bottom-10 right-6 sm:right-12 z-30 transition-opacity duration-300 pointer-events-auto"
+            className="absolute bottom-6 right-6 sm:bottom-10 sm:right-12 z-30 transition-opacity duration-300 pointer-events-auto"
           >
             <div
-              className="flex items-center gap-3 bg-black/80 hover:bg-black/95 text-white backdrop-blur-md border border-white/20 px-4 py-2.5 rounded-full shadow-2xl transition-all cursor-pointer select-none group"
+              className="flex items-center gap-3 bg-black/85 hover:bg-black/95 text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-2xl transition-all cursor-pointer select-none group"
               onMouseDown={startHold}
               onMouseUp={endHold}
               onTouchStart={startHold}
               onTouchEnd={endHold}
             >
               {/* Circular SVG Progress Ring */}
-              <div className="relative w-7 h-7 flex items-center justify-center">
-                <svg className="w-7 h-7 -rotate-90" viewBox="0 0 40 40">
+              <div className="relative w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 -rotate-90" viewBox="0 0 40 40">
                   <circle
                     cx="20"
                     cy="20"
@@ -480,11 +591,11 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
               </div>
 
               <div className="flex flex-col text-left">
-                <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-white">
+                <span className="font-mono text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-white">
                   CLICK &amp; HOLD
                 </span>
-                <span className="font-mono text-[9px] uppercase tracking-wider text-[#64748B]">
-                  OR SCROLL TO ENTER
+                <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-wider text-[#64748B]">
+                  OR SCROLL TO DIVE
                 </span>
               </div>
             </div>

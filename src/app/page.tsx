@@ -5,6 +5,7 @@ import HeroSection from '@/components/HeroSection';
 import LedgerSection from '@/components/sections/LedgerSection';
 import FeaturesGrid from '@/components/sections/FeaturesGrid';
 import EcosystemExplorer from '@/components/explorer/EcosystemExplorer';
+import BackgroundCubesSection from '@/components/sections/BackgroundCubesSection';
 import FeaturedEvents from '@/components/FeaturedEvents';
 import UpcomingEventsGrid from '@/components/UpcomingEventsGrid';
 import InitiativesSection from '@/components/InitiativesSection';
@@ -43,6 +44,9 @@ export default function HomePage() {
 
         {/* Interactive E-Cell Ecosystem Explorer (Simulated File Tree) */}
         <EcosystemExplorer />
+
+        {/* Interactive 3D WebGL Venture Wavefield (Aceternity UI) */}
+        <BackgroundCubesSection />
 
         {/* Featured Signature Events Deck */}
         <FeaturedEvents />
