@@ -5,28 +5,54 @@ import TitleScreen from './TitleScreen';
 import { ArrowDown, Sparkles } from 'lucide-react';
 
 /* ────────────────────────────────────────────────────────────────────────
- *  SpiralIntroStage — Signature Concentric Editorial Spiral
+ *  SpiralIntroStage — Dense Concentric Entrepreneurship Spiral
  *
- *  Faithfully reproduces the interaction and pacing of contentarchitecture.dev:
- *  • Full-screen dark canvas (#07090E) with subtle 22px pitch dot grid
- *  • 9 concentric rotating text rings centered in viewport (cx = w/2, cy = h/2)
- *  • Phrase: 'ENTREPRENEURSHIP CELL · MIT AOE PUNE · BUILDERS · IDEAS INTO IMPACT · '
- *  • Tops of characters point inward toward center (rot = theta - PI/2)
- *  • Reads left-to-right at the bottom
- *  • Alternate rings spin in opposite directions with calibrated angular velocities
- *  • 1.8s single-pass scattered letter reveal on load (organic gappy matrix look)
- *  • Floating architectural capsule header at top with navigation links + marquee
- *  • Interactive "CLICK & HOLD" / "SCROLL TO DIVE" pill with circular SVG progress
- *  • "LEARN MORE" pill at bottom-right
- *  • Reversible GSAP ScrollTrigger aperture zoom:
- *    - Circular hole punches cleanly through canvas with destination-out
- *    - Sharp white glowing ring borders the aperture
- *    - Reveals TitleScreen ('PLATE 001 // IDENTITY - MITAOE E-CELL') strictly inside the circle
- *    - Expands smoothly to 100% viewport, transitioning seamlessly into the homepage
+ *  Faithfully reproduces the dense layout & interaction of contentarchitecture.dev:
+ *  • 22 tightly-spaced concentric text rings filling the entire viewport to the edges
+ *  • Curated vocabulary bank dedicated to campus entrepreneurship, pre-seed funding,
+ *    and student builder innovation at MIT AOE
+ *  • Dynamic font color accents (Electric Blue, Neon Cyan, Crisp White, Muted Slate)
+ *  • Interactive cursor hover:
+ *    - Matrix character-shift/scramble effect on letters near mouse pointer
+ *    - Glow highlight in vibrant Neon Cyan (#38BDF8)
+ *    - Micro physical repulsion nudge
+ *  • Optical motion trails via subtle phosphor decay
+ *  • Crisp white rectangular "CLICK & HOLD" badge matching reference
+ *  • Reversible GSAP ScrollTrigger aperture zoom revealing TitleScreen beneath
  * ────────────────────────────────────────────────────────────────────── */
 
-const RING_COUNT = 9;
-const REPEATED_PHRASE = 'ENTREPRENEURSHIP CELL · MIT AOE PUNE · BUILDERS · IDEAS INTO IMPACT · ';
+const RING_COUNT = 22;
+const SCRAMBLE_GLYPHS = '0123456789ABCDEF$#@%&*+=?~^/\\<>[]{}|;:';
+
+interface PhraseConfig {
+  text: string;
+  color: 'white' | 'blue' | 'cyan' | 'muted';
+}
+
+const ENTREPRENEURSHIP_PHRASES: PhraseConfig[] = [
+  { text: 'ZERO TO ONE · SEED CAPITAL · PROTOTYPE · ', color: 'cyan' },
+  { text: 'STUDENT FOUNDERS · HIGH CONVICTION · BUILD WHAT SCALES · ', color: 'white' },
+  { text: '₹25L PRE-SEED GRANTS · RAPID PROTOTYPING · MAKERSPACE · ', color: 'blue' },
+  { text: 'CAMPUS VENTURE ENGINE · WESTERN INDIA BUILDERS · CIIE PUNE · ', color: 'muted' },
+  { text: 'DISRUPTIVE INNOVATION · DEEP TECH LABS · AUDITED PROTOTYPES · ', color: 'cyan' },
+  { text: 'PATENT CLINIC · 100% REIMBURSED IP FILINGS · HARD TECH · ', color: 'white' },
+  { text: 'PRODUCT MARKET FIT · SHIP FAST BREAK CONSTRAINTS · SAAS · ', color: 'blue' },
+  { text: 'ENTREPRENEURSHIP CELL · MIT AOE PUNE · VENTURE STUDIO · ', color: 'white' },
+  { text: 'ANGEL SYNDICATE · COHORT 2026 · ALANDI INNOVATION CAMPUS · ', color: 'muted' },
+  { text: 'RADICAL INVENTIONS · FOUNDER OPERATORS · DORM TO SEED · ', color: 'cyan' },
+  { text: 'VENTURE ARCHITECTURE · CODE CAPITAL HARDWARE · ', color: 'blue' },
+  { text: 'EQUITY FREE GRANTS · FOUNDER FELLOWSHIPS · BUILD TO SCALE · ', color: 'white' },
+  { text: 'CAMPUS TO VENTURE PLATFORM · HIGH VELOCITY BUILDERS · ', color: 'muted' },
+  { text: 'ZERO COMPROMISE ENGINEERING · HARDWARE MAKERSPACES · ', color: 'cyan' },
+  { text: 'DEEP CONVICTION CAPITAL · RESEARCH TO COMMERCIAL PRODUCT · ', color: 'blue' },
+  { text: 'CAMPUS INCUBATOR · 40+ AUDITED STARTUPS · CIIE ECOSYSTEM · ', color: 'white' },
+  { text: 'BUILD THE UNBUILDABLE · AMBITIOUS FOUNDERS · PITCH CLINIC · ', color: 'muted' },
+  { text: 'INSTITUTIONAL VENTURE CAPITAL · GLOBAL MENTOR NETWORK · ', color: 'cyan' },
+  { text: 'STUDENT VENTURE STUDIO · MIT ACADEMY OF ENGINEERING · ', color: 'white' },
+  { text: 'AUDITED PROTOTYPES · RAPID VALIDATION · SEED INVESTMENT · ', color: 'blue' },
+  { text: 'IDEAS INTO AUDITED VENTURES · WESTERN INDIA FOUNDERS · ', color: 'muted' },
+  { text: 'ENTREPRENEURSHIP CELL · MIT AOE PUNE · BUILD THE FUTURE · ', color: 'cyan' },
+];
 
 interface RingData {
   radius: number;
@@ -34,6 +60,8 @@ interface RingData {
   charCount: number;
   speed: number;
   thresholds: Float32Array;
+  phrase: string;
+  colorType: 'white' | 'blue' | 'cyan' | 'muted';
 }
 
 interface SpiralIntroStageProps {
@@ -49,15 +77,21 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const offscreenGridRef = useRef<HTMLCanvasElement | null>(null);
 
-  // UI DOM Refs (Zero React re-renders)
+  // UI DOM Refs
   const topNavRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
   const exploreBtnRef = useRef<HTMLDivElement>(null);
-  const progressRingRef = useRef<SVGCircleElement>(null);
 
   // Rings dynamic data
   const ringsDataRef = useRef<RingData[]>([]);
   const anglesRef = useRef<Float64Array>(new Float64Array(RING_COUNT));
+
+  // Interactive Cursor Position Ref
+  const mousePosRef = useRef<{ x: number; y: number; active: boolean }>({
+    x: -1000,
+    y: -1000,
+    active: false,
+  });
 
   // Physics & Animation Refs
   const rafRef = useRef<number>(0);
@@ -84,20 +118,26 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   }, [onEnterHome]);
 
   // ── Render Single Frame (60–120 FPS Target) ──
-  const renderFrame = useCallback((canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, dpr: number) => {
+  const renderFrame = useCallback((canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, dpr: number, timestamp: number) => {
     const w = canvas.width;
     const h = canvas.height;
     const p = currentProgressRef.current;
+    const mouse = mousePosRef.current;
 
-    // Rings are always centered in the viewport
+    // Rings are dead center in viewport
     const cx = w / 2;
     const cy = h / 2;
 
-    // 1. Clear with solid dark background
-    ctx.fillStyle = '#07090E';
-    ctx.fillRect(0, 0, w, h);
+    // 1. Motion Trail Pass: Translucent dark background creates smooth phosphor trail decay
+    if (p < 0.85) {
+      ctx.fillStyle = 'rgba(7, 9, 14, 0.38)';
+      ctx.fillRect(0, 0, w, h);
+    } else {
+      ctx.fillStyle = '#07090E';
+      ctx.fillRect(0, 0, w, h);
+    }
 
-    // 2. Draw cached 22px pitch dot grid (1 blit call)
+    // 2. Draw cached 22px pitch dot grid
     if (offscreenGridRef.current) {
       ctx.drawImage(offscreenGridRef.current, 0, 0);
     }
@@ -118,15 +158,17 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     const rings = ringsDataRef.current;
     const angles = anglesRef.current;
 
-    // Set text alignment
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // 5. Draw Rings
+    const hoverRadius = 85 * dpr;
+    const hoverRadiusSq = hoverRadius * hoverRadius;
+
+    // 5. Draw 22 Concentric Rings
     for (let k = 0; k < rings.length; k++) {
       const ring = rings[k];
       const scaledR = ring.radius * zoomScale;
-      const scaledFs = ring.fontSize * Math.pow(zoomScale, 0.62);
+      const scaledFs = ring.fontSize * Math.pow(zoomScale, 0.60);
 
       // Cull whole ring if completely inside aperture
       if (holeRadius > 0 && scaledR + scaledFs < holeRadius) {
@@ -134,63 +176,113 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       }
 
       // Cull if scaled far out of viewport
-      if (scaledR - scaledFs > Math.hypot(w, h) / 2 + 100 * dpr) {
+      if (scaledR - scaledFs > Math.hypot(w, h) / 2 + 120 * dpr) {
         continue;
       }
 
-      // Smooth alpha fade as aperture grows
-      let alpha = 0.88;
-      if (p > 0.20) {
-        const fadeThreshold = 0.20 + (k / rings.length) * 0.40;
+      // Smooth alpha fade as aperture expands
+      let baseAlpha = 0.90;
+      if (p > 0.18) {
+        const fadeThreshold = 0.18 + (k / rings.length) * 0.42;
         if (p > fadeThreshold) {
-          alpha *= Math.max(0, 1 - (p - fadeThreshold) / 0.35);
+          baseAlpha *= Math.max(0, 1 - (p - fadeThreshold) / 0.35);
         }
       }
-      if (alpha <= 0.02) continue;
+      if (baseAlpha <= 0.02) continue;
+
+      // Color palette per ring
+      let defaultFill: string;
+      switch (ring.colorType) {
+        case 'blue':
+          defaultFill = `rgba(96, 165, 250, ${baseAlpha * 1.05})`; // Electric Blue (#60A5FA)
+          break;
+        case 'cyan':
+          defaultFill = `rgba(56, 189, 248, ${baseAlpha * 1.10})`; // Luminous Cyan (#38BDF8)
+          break;
+        case 'muted':
+          defaultFill = `rgba(148, 163, 184, ${baseAlpha * 0.75})`; // Technical Slate (#94A3B8)
+          break;
+        case 'white':
+        default:
+          defaultFill = `rgba(255, 255, 255, ${baseAlpha})`;
+          break;
+      }
 
       ctx.font = `500 ${scaledFs}px 'IBM Plex Mono', 'Space Mono', monospace`;
-      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
 
       const n = ring.charCount;
       const a0 = angles[k];
       const step = (Math.PI * 2) / n;
-      const phraseLen = REPEATED_PHRASE.length;
+      const phrase = ring.phrase;
+      const phraseLen = phrase.length;
       const thresholds = ring.thresholds;
 
       for (let i = 0; i < n; i++) {
         // Load-in reveal check during first 1.8s
         if (!isRevealComplete && thresholds[i] > reveal) continue;
 
-        // Angle & Position: theta = a0 - i * (2*PI/n)
+        // Angle: theta = a0 - i * (2*PI/n)
         const theta = a0 - i * step;
-        const x = cx + scaledR * Math.cos(theta);
-        const y = cy + scaledR * Math.sin(theta);
+        let x = cx + scaledR * Math.cos(theta);
+        let y = cy + scaledR * Math.sin(theta);
 
-        // Frustum culling: skip letter if outside viewport bounds (+40px)
+        // Frustum culling (+40px padding)
         if (x < -40 * dpr || x > w + 40 * dpr || y < -40 * dpr || y > h + 40 * dpr) {
           continue;
         }
 
-        // Aperture culling: skip letter if inside hole
+        // Aperture culling
         if (holeRadius > 0) {
           const distToCenter = Math.hypot(x - cx, y - cy);
           if (distToCenter < holeRadius + 4 * dpr) continue;
         }
 
-        // Rotation: theta - PI/2 (tops point toward center, reads L to R at bottom)
+        const originalChar = phrase[i % phraseLen];
+
+        // ── Cursor Hover Interaction: Matrix Character Shift & Cyan Glow ──
+        let charToDraw = originalChar;
+        let charFill = defaultFill;
+
+        if (mouse.active) {
+          const dx = x - mouse.x;
+          const dy = y - mouse.y;
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < hoverRadiusSq && originalChar !== ' ') {
+            const dist = Math.sqrt(distSq);
+            const proximity = 1 - dist / hoverRadius;
+
+            // 1. Character Shift (Scramble glyphs like matrix hacker terminal)
+            const scrambleIdx = Math.floor(timestamp * 0.035 + i * 11 + k * 17) % SCRAMBLE_GLYPHS.length;
+            charToDraw = SCRAMBLE_GLYPHS[scrambleIdx];
+
+            // 2. High-intensity neon cyan highlight
+            charFill = '#38BDF8';
+
+            // 3. Subtle physical micro-nudge away from cursor
+            const push = proximity * 6 * dpr;
+            const pushAngle = Math.atan2(dy, dx);
+            x += Math.cos(pushAngle) * push;
+            y += Math.sin(pushAngle) * push;
+          }
+        }
+
+        // Bullet dots separator highlight
+        if (charToDraw === '·') {
+          charFill = `rgba(56, 189, 248, ${Math.min(1, baseAlpha * 1.3)})`;
+        }
+
+        // Rotation: theta - PI/2 (tops point inward toward center)
         const rot = theta - Math.PI / 2;
         const c = Math.cos(rot);
         const s = Math.sin(rot);
 
-        const char = REPEATED_PHRASE[i % phraseLen];
-
-        // Hardware matrix transform without save() and restore()
+        ctx.fillStyle = charFill;
         ctx.setTransform(c, s, -s, c, x, y);
-        ctx.fillText(char, 0, 0);
+        ctx.fillText(charToDraw, 0, 0);
       }
     }
 
-    // Reset matrix transform once
     ctx.resetTransform();
 
     // 6. Aperture Punch & Glowing Edge
@@ -203,7 +295,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       ctx.fill();
       ctx.restore();
 
-      // Sharp glowing boundary stroke around aperture
+      // Sharp glowing circular boundary
       ctx.beginPath();
       ctx.arc(cx, cy, holeRadius, 0, Math.PI * 2);
       ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, 0.75 - (p - 0.18) * 0.85)})`;
@@ -242,7 +334,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       revealProgressRef.current = eased;
     }
 
-    // Update rotation angles (unless reduced motion)
+    // Update rotation angles with alternating speeds
     if (!reducedMotionRef.current) {
       const rings = ringsDataRef.current;
       const angles = anglesRef.current;
@@ -272,7 +364,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       topNavRef.current.style.transform = `translateY(${(-p * 30).toFixed(1)}px)`;
     }
 
-    // 2. Center Pill (CLICK & HOLD)
+    // 2. Iconic White CLICK & HOLD Badge: fades out as aperture opens
     if (pillRef.current) {
       const pillAlpha = Math.max(0, 1 - p * 3.2);
       pillRef.current.style.opacity = pillAlpha.toFixed(3);
@@ -280,34 +372,27 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       pillRef.current.style.transform = `translateY(${(p * 25).toFixed(1)}px)`;
     }
 
-    // 3. SVG Progress Ring
-    if (progressRingRef.current) {
-      const circumference = 2 * Math.PI * 18;
-      const strokeDashoffset = circumference * (1 - p);
-      progressRingRef.current.style.strokeDashoffset = strokeDashoffset.toFixed(1);
-    }
-
-    // 4. Explore Button (bottom right)
+    // 3. Explore Button (bottom right)
     if (exploreBtnRef.current) {
       const btnAlpha = Math.max(0, 1 - p * 3.5);
       exploreBtnRef.current.style.opacity = btnAlpha.toFixed(3);
       exploreBtnRef.current.style.pointerEvents = btnAlpha > 0.1 ? 'auto' : 'none';
     }
 
-    // 5. TitleScreen pointer events when aperture fully opens
+    // 4. TitleScreen pointer events when aperture fully opens
     if (titleScreenWrapperRef.current) {
       titleScreenWrapperRef.current.style.pointerEvents = p > 0.85 ? 'auto' : 'none';
     }
 
-    // 6. Canvas Wrapper (fades at the very end p > 0.88)
+    // 5. Canvas Wrapper (fades at the very end p > 0.88)
     if (canvasWrapperRef.current) {
       const canvasAlpha = p > 0.88 ? Math.max(0, 1 - (p - 0.88) / 0.12) : 1;
       canvasWrapperRef.current.style.opacity = canvasAlpha.toFixed(3);
       canvasWrapperRef.current.style.pointerEvents = p > 0.85 ? 'none' : 'auto';
     }
 
-    // Render canvas frame
-    renderFrame(canvas, ctx, dpr);
+    // Render canvas frame with hover & timestamp for character shift
+    renderFrame(canvas, ctx, dpr, timestamp);
 
     // Stop drawing loop once aperture completely fills viewport
     if (p >= 0.99) {
@@ -318,7 +403,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
     rafRef.current = requestAnimationFrame(animate);
   }, [renderFrame]);
 
-  // ── Setup Canvas, Dot Grid & Mathematical Ring Model ──
+  // ── Setup Canvas, Dot Grid & 22-Ring Mathematical Model ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -338,21 +423,27 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
       canvas.width = w;
       canvas.height = h;
 
-      // ── Calibrated Ring Radii & Typography ──
-      const viewportMin = Math.min(rect.width, rect.height);
-      const R0 = 0.055 * viewportMin * dpr;
+      // Calculate diagonal to guarantee rings fill the entire screen to the far corners
+      const maxDistToCorner = Math.hypot(w, h) / 2;
+      const targetOuterRadius = maxDistToCorner * 1.14; // Span slightly beyond viewport corners
+      const innerRadius = 26 * dpr;
+
+      // Calibrated growth ratio so 22 rings smoothly pack the space with tight line spacing
+      const growthRatio = Math.pow(targetOuterRadius / innerRadius, 1 / (RING_COUNT - 1));
 
       const newRings: RingData[] = [];
       for (let k = 0; k < RING_COUNT; k++) {
-        // R(k) = R0 * 1.34^k
-        const radius = R0 * Math.pow(1.34, k);
+        const radius = innerRadius * Math.pow(growthRatio, k);
         const cssRadius = radius / dpr;
-        // fs(R) = (8.5 + 0.040 * R_css) * dpr
-        const fontSize = (8.5 + 0.040 * cssRadius) * dpr;
-        // n = floor(2 * PI * R / (0.68 * fs))
-        const charCount = Math.floor((2 * Math.PI * radius) / (0.68 * fontSize));
-        // Alternate rings spin in opposite directions: speed = 0.048 / (1 + 0.12k) rad/s
-        const speed = (0.048 / (1 + 0.12 * k)) * (k % 2 === 0 ? 1 : -1);
+
+        // Proportional font size to ensure clean radial line spacing without overlaps
+        const fontSize = (6.8 + 0.024 * cssRadius) * dpr;
+
+        // Character count: tight monospace density
+        const charCount = Math.floor((2 * Math.PI * radius) / (0.69 * fontSize));
+
+        // Speed: smooth alternating angular velocities (inner rings slightly faster, outer rings majestic)
+        const speed = (0.044 / (1 + 0.075 * k)) * (k % 2 === 0 ? 1 : -1);
 
         // Pre-generate random thresholds t in [0, 1] for 1.8s scattered fill-in
         const thresholds = new Float32Array(charCount);
@@ -360,12 +451,16 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
           thresholds[i] = Math.random();
         }
 
+        const phraseConfig = ENTREPRENEURSHIP_PHRASES[k % ENTREPRENEURSHIP_PHRASES.length];
+
         newRings.push({
           radius,
           fontSize,
           charCount,
           speed,
           thresholds,
+          phrase: phraseConfig.text,
+          colorType: phraseConfig.color,
         });
       }
       ringsDataRef.current = newRings;
@@ -448,6 +543,23 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   const startHold = () => { isHoldingRef.current = true; };
   const endHold = () => { isHoldingRef.current = false; };
 
+  // ── Pointer Move for Character Shift / Matrix Hover Effect ──
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, dprCapRef.current);
+    mousePosRef.current = {
+      x: (e.clientX - rect.left) * dpr,
+      y: (e.clientY - rect.top) * dpr,
+      active: true,
+    };
+  };
+
+  const handlePointerLeave = () => {
+    mousePosRef.current = { x: -1000, y: -1000, active: false };
+  };
+
   return (
     <div
       ref={pinWrapperRef}
@@ -466,7 +578,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
           <TitleScreen onScrollCueClick={handleScrollToHome} />
         </div>
 
-        {/* ── CANVAS LAYER: Solid dark background with concentric rotating rings ── */}
+        {/* ── CANVAS LAYER: Solid dark background with 22 concentric rotating rings & hover ── */}
         <div
           ref={canvasWrapperRef}
           className="absolute inset-0 w-full h-full z-10 transition-opacity duration-300"
@@ -478,6 +590,8 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
         >
           <canvas
             ref={canvasRef}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
             className="w-full h-full block cursor-grab active:cursor-grabbing"
           />
         </div>
@@ -529,54 +643,21 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
           </div>
         </div>
 
-        {/* ── CENTER INTERACTIVE PILL: CLICK & HOLD ── */}
+        {/* ── CENTER INTERACTIVE PILL: Iconic White "CLICK & HOLD" Badge (Matching Reference) ── */}
         <div
           ref={pillRef}
           className="absolute bottom-8 sm:bottom-12 inset-x-0 mx-auto w-fit z-30 transition-opacity duration-300 pointer-events-auto select-none"
         >
-          <div
-            className="flex items-center gap-3 bg-black/85 hover:bg-black/95 text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-2xl transition-all cursor-pointer group active:scale-95"
+          <button
             onMouseDown={startHold}
             onMouseUp={endHold}
             onTouchStart={startHold}
             onTouchEnd={endHold}
+            type="button"
+            className="bg-white hover:bg-slate-100 active:scale-95 text-black font-mono font-bold text-[10px] sm:text-xs tracking-widest px-4 py-1.5 shadow-2xl uppercase transition-transform cursor-pointer border border-white"
           >
-            {/* Circular SVG Progress Ring */}
-            <div className="relative w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center">
-              <svg className="w-6 h-6 sm:w-7 sm:h-7 -rotate-90" viewBox="0 0 40 40">
-                <circle
-                  cx="20"
-                  cy="20"
-                  r="18"
-                  className="stroke-white/20"
-                  strokeWidth="2.5"
-                  fill="none"
-                />
-                <circle
-                  ref={progressRingRef}
-                  cx="20"
-                  cy="20"
-                  r="18"
-                  className="stroke-[#155EEF] transition-all duration-75"
-                  strokeWidth="2.5"
-                  strokeDasharray={2 * Math.PI * 18}
-                  strokeDashoffset={2 * Math.PI * 18}
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              </svg>
-              <ArrowDown className="w-3 h-3 text-white absolute" />
-            </div>
-
-            <div className="flex flex-col text-left">
-              <span className="font-mono text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-white">
-                CLICK &amp; HOLD
-              </span>
-              <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-wider text-[#94A3B8]">
-                OR SCROLL TO DIVE
-              </span>
-            </div>
-          </div>
+            CLICK &amp; HOLD
+          </button>
         </div>
 
         {/* ── BOTTOM RIGHT: LEARN MORE / EXPLORE ── */}
