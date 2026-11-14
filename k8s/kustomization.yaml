@@ -10,3 +10,4 @@ commonLabels:
   app.kubernetes.io/name: ecell-web
   app.kubernetes.io/instance: production
   app.kubernetes.io/part-of: mitaoe-entrepreneurship-platform
+

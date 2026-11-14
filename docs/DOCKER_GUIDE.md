@@ -93,3 +93,4 @@ docker compose logs -f
 # Stop and remove container
 docker compose down
 ```
+

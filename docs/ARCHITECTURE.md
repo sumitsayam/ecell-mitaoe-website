@@ -110,3 +110,4 @@ p = 0.00 ──────── p = 0.25 ──────── p = 0.35 ─
    - User naturally scrolls into `#homepage-main`.
 5. **Upward Scrolling ($1.00 \to 0.00$)**:
    - Because progress $p$ is bound directly to ScrollTrigger, scrolling back up executes the mathematical inverse, smoothly contracting the aperture, returning the spiral rings, and restoring the split hero.
+

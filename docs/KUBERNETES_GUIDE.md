@@ -62,3 +62,4 @@ kubectl logs -l app=ecell-web --tail=50 -f
 ```bash
 kubectl autoscale deployment ecell-web-deployment --cpu-percent=75 --min=2 --max=10
 ```
+

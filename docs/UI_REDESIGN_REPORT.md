@@ -53,3 +53,4 @@ Based on the 8 screen captures of the live interaction, every stage has been map
 2. **Registration Crosshairs**: Delicate `+` corner marks at the edges of technical cards and identity plates evoke architectural drawings and blueprints.
 3. **Ledger Table Rules**: Dashed border dividers (`border-dashed border-slate-300`) separate venture acceleration milestones, replicating financial ledgers and technical schedules.
 4. **Floating Pill Navigation**: Centered, rounded capsule navigation with active route pills, search triggers (with `⌘K` badge), and recruitment CTA.
+

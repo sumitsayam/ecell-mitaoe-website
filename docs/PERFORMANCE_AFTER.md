@@ -49,3 +49,4 @@ Following architectural optimizations and canvas pipeline re-engineering, the ap
 - `src/app/page.tsx` was converted to a pure Server Component:
   - Eliminates client bundle weight for 12 static sections.
   - Generates optimized static HTML at build time for instant First Contentful Paint.
+

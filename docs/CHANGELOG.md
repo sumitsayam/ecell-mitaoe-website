@@ -45,3 +45,4 @@ All notable changes to the E-Cell MITAOE web platform are documented in this fil
 - Fixed canvas context thrashing on every frame.
 - Fixed Next.js font warning by moving font import to `globals.css`.
 - Fixed Next.js build type check error on `EventModal`.
+

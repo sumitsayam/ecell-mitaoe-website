@@ -57,3 +57,4 @@ All 22 public and internal management routes were queried against the production
 - **Click & Hold Interaction**: Holding down mouse or touch accelerates scroll velocity with smooth momentum, advancing aperture progress seamlessly.
 - **Zero React Re-renders**: Profiling during scroll confirms 0 component re-renders per frame.
 - **Modal Context**: Checked that `EventModal`, `JoinModal`, and `SearchModal` open and close reliably without triggering re-renders in Server Component sections.
+

@@ -52,3 +52,4 @@ Profiling was conducted to identify the root causes of dropped frames, interacti
 | **Draw Calls per Frame** | ~1,600+ path operations | < 80 draw calls |
 | **Client JS Hydration Overhead** | Entire homepage tree hydrated | Static Server Components |
 | **Intro Reversibility** | Irreversible (unmounted on completion) | 100% reversible scrub |
+
