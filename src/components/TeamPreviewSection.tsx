@@ -29,7 +29,7 @@ export default function TeamPreviewSection() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div>
-            <SectionLabel number="007" label="HUMAN CAPITAL" className="mb-3" />
+            <SectionLabel label="LEADERSHIP & TEAM" className="mb-3" />
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-primary tracking-tight">
               Driven by student founders. <br />
               <span className="font-serif italic font-normal text-primary/80">

@@ -166,13 +166,13 @@ export function GridTrail() {
         const x = c * CELL;
         const y = row * CELL;
 
-        // Fill accent at alpha intensity * 0.28
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${(intensity * 0.28).toFixed(3)})`;
+        // Fill accent with subtle, elegant luminous glow
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${(intensity * 0.12).toFixed(3)})`;
         ctx.fillRect(x, y, CELL, CELL);
 
-        // 1px accent outline at alpha intensity * 0.60
-        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${(intensity * 0.60).toFixed(3)})`;
-        ctx.lineWidth = idx === headIdx ? 2 : 1;
+        // Accent outline: refined 1px border
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${(intensity * 0.35).toFixed(3)})`;
+        ctx.lineWidth = idx === headIdx ? 1.5 : 1;
         ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
       });
 
@@ -185,8 +185,8 @@ export function GridTrail() {
       const dt = Math.min(64, timestamp - lastTimeRef.current);
       lastTimeRef.current = timestamp;
 
-      // Exponential decay: intensity * exp(-dt / 260)
-      const decay = Math.exp(-dt / 260);
+      // Exponential decay: intensity * exp(-dt / 220)
+      const decay = Math.exp(-dt / 220);
       const intensities = intensitiesRef.current;
       const activeIndices = activeIndicesRef.current;
 
@@ -299,3 +299,4 @@ export function GridTrail() {
     </div>
   );
 }
+

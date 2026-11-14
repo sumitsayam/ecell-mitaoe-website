@@ -78,9 +78,7 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
   const offscreenGridRef = useRef<HTMLCanvasElement | null>(null);
 
   // UI DOM Refs
-  const topNavRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
-  const exploreBtnRef = useRef<HTMLDivElement>(null);
 
   // Rings dynamic data
   const ringsDataRef = useRef<RingData[]>([]);
@@ -356,27 +354,11 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
 
     // ── Direct DOM updates (zero React re-renders) ──
 
-    // 1. Top Navigation Bar: fades out as user scrolls
-    if (topNavRef.current) {
-      const topAlpha = Math.max(0, 1 - p * 3.5);
-      topNavRef.current.style.opacity = topAlpha.toFixed(3);
-      topNavRef.current.style.pointerEvents = topAlpha > 0.1 ? 'auto' : 'none';
-      topNavRef.current.style.transform = `translateY(${(-p * 30).toFixed(1)}px)`;
-    }
-
-    // 2. Iconic White CLICK & HOLD Badge: fades out as aperture opens
+    // Hold cue: fades out as user scrolls
     if (pillRef.current) {
-      const pillAlpha = Math.max(0, 1 - p * 3.2);
+      const pillAlpha = Math.max(0, 1 - p * 3.5);
       pillRef.current.style.opacity = pillAlpha.toFixed(3);
       pillRef.current.style.pointerEvents = pillAlpha > 0.1 ? 'auto' : 'none';
-      pillRef.current.style.transform = `translateY(${(p * 25).toFixed(1)}px)`;
-    }
-
-    // 3. Explore Button (bottom right)
-    if (exploreBtnRef.current) {
-      const btnAlpha = Math.max(0, 1 - p * 3.5);
-      exploreBtnRef.current.style.opacity = btnAlpha.toFixed(3);
-      exploreBtnRef.current.style.pointerEvents = btnAlpha > 0.1 ? 'auto' : 'none';
     }
 
     // 4. TitleScreen pointer events when aperture fully opens
@@ -596,57 +578,10 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
           />
         </div>
 
-        {/* ── TOP FLOATING HEADER PILL: Architectural Navigation & Marquee (Reference) ── */}
-        <div
-          ref={topNavRef}
-          className="absolute top-4 sm:top-6 inset-x-0 mx-auto w-fit max-w-[94vw] z-30 transition-opacity duration-300 pointer-events-auto select-none"
-        >
-          <div className="flex flex-col items-center bg-[#07090E]/85 hover:bg-[#07090E]/95 border border-white/15 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden transition-all">
-            {/* Upper Navigation Row */}
-            <div className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 border-b border-white/10 font-mono text-[10px] sm:text-xs text-white/80">
-              <a
-                href="#homepage-main"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleScrollToHome();
-                }}
-                className="flex items-center gap-2 pr-2 sm:pr-3 border-r border-white/15 text-white font-bold hover:text-[#155EEF] transition-colors"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#155EEF]" />
-                <span>E-CELL</span>
-              </a>
-              <a href="#about" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors hidden xs:inline">
-                ABOUT
-              </a>
-              <a href="#all-events" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors">
-                EVENTS
-              </a>
-              <a href="#initiatives" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors hidden sm:inline">
-                INITIATIVES
-              </a>
-              <a href="/ventures" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors">
-                VENTURES
-              </a>
-              <a href="/team" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors hidden md:inline">
-                TEAM
-              </a>
-              <a href="/contact" className="px-2 py-1 hover:text-white hover:bg-white/5 rounded transition-colors">
-                CONTACT
-              </a>
-            </div>
-
-            {/* Lower Marquee Strip */}
-            <div className="w-full overflow-hidden py-1 px-4 bg-white/[0.03] text-[9px] font-mono tracking-wider text-[#94A3B8] whitespace-nowrap flex items-center justify-center gap-3">
-              <span className="inline-block animate-pulse w-1.5 h-1.5 rounded-full bg-[#155EEF]" />
-              <span>MIT AOE PUNE // CIIE // 2026 COHORT APPLICATIONS OPEN // ₹25L PRE-SEED GRANTS</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── CENTER INTERACTIVE PILL: Iconic White "CLICK & HOLD" Badge (Matching Reference) ── */}
+        {/* ── HOLD OR SCROLL CUE ── */}
         <div
           ref={pillRef}
-          className="absolute bottom-8 sm:bottom-12 inset-x-0 mx-auto w-fit z-30 transition-opacity duration-300 pointer-events-auto select-none"
+          className="absolute bottom-8 sm:bottom-10 inset-x-0 mx-auto w-fit z-20 transition-opacity duration-300 pointer-events-auto select-none"
         >
           <button
             onMouseDown={startHold}
@@ -654,24 +589,9 @@ export default function SpiralIntroStage({ onEnterHome }: SpiralIntroStageProps)
             onTouchStart={startHold}
             onTouchEnd={endHold}
             type="button"
-            className="bg-white hover:bg-slate-100 active:scale-95 text-black font-mono font-bold text-[10px] sm:text-xs tracking-widest px-4 py-1.5 shadow-2xl uppercase transition-transform cursor-pointer border border-white"
+            className="bg-white/90 hover:bg-white active:scale-95 text-black font-mono font-medium text-xs tracking-wider px-5 py-2 rounded-full shadow-lg uppercase transition-all cursor-pointer border border-white/20"
           >
-            CLICK &amp; HOLD
-          </button>
-        </div>
-
-        {/* ── BOTTOM RIGHT: LEARN MORE / EXPLORE ── */}
-        <div
-          ref={exploreBtnRef}
-          className="absolute bottom-6 right-6 sm:bottom-10 sm:right-10 z-30 transition-opacity duration-300 pointer-events-auto hidden sm:block select-none"
-        >
-          <button
-            onClick={handleScrollToHome}
-            type="button"
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 hover:bg-white/10 text-white/80 hover:text-white border border-white/20 font-mono text-[10px] uppercase tracking-wider transition-all backdrop-blur-md cursor-pointer active:scale-95"
-          >
-            <span>LEARN MORE</span>
-            <ArrowDown className="w-3 h-3 text-[#155EEF]" />
+            Hold or scroll to explore ↓
           </button>
         </div>
       </div>

@@ -52,7 +52,7 @@ export default function StartupToolkit() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 sm:mb-16 gap-6">
           <div>
-            <SectionLabel number="006" label="THE STARTUP TOOLKIT" className="mb-3" />
+            <SectionLabel label="FOUNDER TOOLKIT" className="mb-3" />
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-primary tracking-tight">
               Open founder playbooks. <br />
               <span className="font-serif italic font-normal text-primary/80">

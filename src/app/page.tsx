@@ -1,22 +1,13 @@
 import React from 'react';
 import SpiralIntroStage from '@/components/intro/SpiralIntroStage';
 import { TopHeader } from '@/components/layout/TopHeader';
-import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/HeroSection';
-import LedgerSection from '@/components/sections/LedgerSection';
-import FeaturesGrid from '@/components/sections/FeaturesGrid';
-import EcosystemExplorer from '@/components/explorer/EcosystemExplorer';
-import BackgroundCubesSection from '@/components/sections/BackgroundCubesSection';
-import FeaturedEvents from '@/components/FeaturedEvents';
-import UpcomingEventsGrid from '@/components/UpcomingEventsGrid';
-import InitiativesSection from '@/components/InitiativesSection';
-import AboutSection from '@/components/AboutSection';
-import TeamPreviewSection from '@/components/TeamPreviewSection';
-import AchievementsSection from '@/components/AchievementsSection';
-import StartupToolkit from '@/components/sections/StartupToolkit';
 import StatsBar from '@/components/StatsBar';
+import AboutSection from '@/components/AboutSection';
+import InitiativesSection from '@/components/InitiativesSection';
+import FeaturedEvents from '@/components/FeaturedEvents';
+import TeamPreviewSection from '@/components/TeamPreviewSection';
+import StartupToolkit from '@/components/sections/StartupToolkit';
 import JoinCtaSection from '@/components/JoinCtaSection';
-import FinalSpiralSection from '@/components/sections/FinalSpiralSection';
 import Footer from '@/components/Footer';
 
 export default function HomePage() {
@@ -26,64 +17,40 @@ export default function HomePage() {
       <TopHeader />
 
       {/* ── STAGES 01, 02, 03: The Concentric Spiral → Aperture Zoom → Title Screen ── */}
-      {/* 100% Reversible, scrubbed GSAP ScrollTrigger timeline */}
       <SpiralIntroStage />
 
       {/* ── STAGE 04: Main Website (Continuous scroll transition) ── */}
       <div id="homepage-main" className="relative w-full bg-[var(--bg)] text-[var(--ink)]">
-        {/* Sticky Navigation Pill */}
-        <Navbar />
-
-        {/* Editorial Hero Stage */}
-        <HeroSection />
-
-        {/* Verified Metrics Strip */}
+        {/* Verified Impact Metrics Strip */}
         <StatsBar />
 
-        {/* The Entrepreneurship Ledger (Venture Timeline Compressor) */}
-        <LedgerSection />
-
-        {/* Ten Numbered Capabilities (001–010 Editorial Index) */}
-        <FeaturesGrid />
-
-        {/* Interactive E-Cell Ecosystem Explorer (Simulated File Tree) */}
-        <EcosystemExplorer />
-
-        {/* Interactive 3D WebGL Venture Wavefield (Aceternity UI) */}
-        <BackgroundCubesSection />
-
-        {/* Featured Signature Events Deck */}
-        <FeaturedEvents />
-
-        {/* Comprehensive Event Directory with Search and Status Filter */}
-        <div id="all-events">
-          <UpcomingEventsGrid />
-        </div>
-
-        {/* What is E-Cell / 4 Strategic Pillars */}
+        {/* Institutional Mission & Strategic Pillars */}
         <div id="about">
           <AboutSection />
         </div>
 
-        {/* Key Student Initiatives */}
-        <InitiativesSection />
+        {/* Core Student Founder Programs */}
+        <div id="initiatives">
+          <InitiativesSection />
+        </div>
 
-        {/* Meet the Team (Leadership, Faculty & Department Filters) */}
-        <TeamPreviewSection />
+        {/* Featured Signature Events */}
+        <div id="events">
+          <FeaturedEvents />
+        </div>
 
-        {/* Wall of Fame & Milestones Timeline */}
-        <AchievementsSection />
+        {/* Leadership & Advisory Board */}
+        <div id="team">
+          <TeamPreviewSection />
+        </div>
 
-        {/* Startup Toolkit (Free Founder Resources & Downloadable Templates) */}
+        {/* Free Founder Resources & Downloadable Templates */}
         <StartupToolkit />
 
-        {/* Final Recruitment Statement CTA */}
+        {/* Founder Recruitment / Cohort Application */}
         <JoinCtaSection />
 
-        {/* 11. The Final Spiral (Returning Visual Signature) */}
-        <FinalSpiralSection />
-
-        {/* Architectural Footer */}
+        {/* Institutional Footer */}
         <Footer />
       </div>
     </main>
